@@ -4,13 +4,14 @@ local vicious = require("vicious")
 local theme = require("theme.theme")
 local lain = require("lain")
 local markup = lain.util.markup
+local dpi = require("beautiful.xresources").apply_dpi
 
 local sign_colour = "#A13016"
 
-local cpuwidget = wibox.widget.graph()
-cpuwidget:set_width(100)
-cpuwidget:set_background_color("#232627")
-cpuwidget:set_color({
+local cpugraph = wibox.widget.graph()
+cpugraph:set_width(100)
+cpugraph:set_background_color("#232627")
+cpugraph:set_color({
   type = "linear",
   from = { 0, 0 },
   to = { 0, 55 },
@@ -20,42 +21,49 @@ cpuwidget:set_color({
     { 1, "#487422" },
   },
 })
-vicious.cache(vicious.widgets.cpu)
-vicious.register(cpuwidget, vicious.widgets.cpu, "$1", 0.5)
+local cpuwidget = wibox.layout.fixed.horizontal()
+local cpulabel = wibox.widget.textbox()
+cpulabel:set_markup(markup.fontfg(theme.font_name .. "15", "#D996A3", ""))
+cpuwidget:add(wibox.container.margin(cpulabel, 0, dpi(10)))
+cpuwidget:add(cpugraph)
 
-local fanwidget = wibox.widget.graph()
-fanwidget:set_width(100)
-fanwidget:set_background_color("#232627")
-fanwidget:set_color({
+local fangraph = wibox.widget.graph()
+fangraph:set_width(100)
+fangraph:set_background_color("#232627")
+fangraph:set_color({
   type = "linear",
   from = { 0, 0 },
-  to = { 0, 55 },
+  to = { 0, 35 },
   stops = {
     { 0, "#74223B" },
     { 0.8, "#662274" },
     { 1, "#222974" },
   },
 })
-vicious.register(fanwidget, require("arsham.widgets.fan"), "$1", 1)
+vicious.register(fangraph, require("arsham.widgets.fan"), "$1", 1)
+local fanwidget = wibox.layout.fixed.horizontal()
+local fanlabel = wibox.widget.textbox()
+fanlabel:set_markup(markup.fontfg(theme.font_name .. "15", "#83B888", ""))
+fanwidget:add(wibox.container.margin(fanlabel, 0, dpi(10)))
+fanwidget:add(fangraph)
 
 local thermal = wibox.widget.graph()
 thermal:set_width(100)
 thermal:set_color({
   type = "linear",
   from = { 0, 0 },
-  to = { 200, 0 },
+  to = { 0, 200 },
   stops = {
     { 0, "#FF5656" },
     { 0.4, "#CFC396" },
     { 1, "#AECF96" },
   },
 })
-vicious.cache(vicious.widgets.thermal)
 vicious.register(thermal, vicious.widgets.thermal, "$1", 1, "coretemp-isa-0000")
 
 local memwidget = wibox.widget.textbox()
 vicious.register(memwidget, require("arsham.widgets.mem"), function(_, args)
-  return markup.fontfg(theme.font_name .. "19", sign_colour, " ")
+  return markup.fontfg(theme.font_name .. "17", sign_colour, " ")
     .. markup.fontfg(theme.font_name .. "12", "#A1D571", ("%.2f GiB"):format(args[2]))
 end, 5)
 
