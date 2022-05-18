@@ -1,99 +1,152 @@
 --{{---| Dropbox |-------------------------------------------------------------------------------------------------------------
+local mouse = mouse
 local wibox = require("wibox")
-local string = require("string")
 local watch = require("awful.widget.watch")
-local spawn = require("awful.spawn")
+local awful = require("awful")
+local gears = require("gears")
+local beautiful = require("beautiful")
 
-local status_bin_cmd = "dropbox-cli status"
+local bin_cmd = "dropbox-cli "
 
 local theme = require("theme.theme")
-local dropbox_status_blank = theme.dropbox_status_blank
-local dropbox_status_busy2 = theme.dropbox_status_busy2
-local dropbox_status_busy1 = theme.dropbox_status_busy1
-local dropbox_status_idle = theme.dropbox_status_idle
-local dropbox_status_logo = theme.dropbox_status_logo
-local dropbox_status_x = theme.dropbox_status_x
 local dropbox_loading_icon = theme.dropbox_loading_icon
 local dropbox_number = 1
 
-dropbox_widget = wibox.widget({
+local dropbox_widget = wibox.widget({ --{{{
   {
     id = "icon",
-    image = dropbox_status_logo,
-    --resize = false,
+    image = theme.dropbox_status_logo,
     widget = wibox.widget.imagebox,
   },
-  layout = wibox.container.margin(_, 8, 8, 8, 8),
+  margins = 4,
+  layout = wibox.container.margin,
   set_image = function(self, path)
     self.icon.image = path
   end,
+}) --}}}
+
+local menu_items = { --{{{
+  { name = "Stop", icon_name = theme.dropbox_status_x, command = "stop" },
+  { name = "Start", icon_name = theme.dropbox_loading_icon, command = "start" },
+} --}}}
+
+local popup = awful.popup({
+  ontop = true,
+  visible = false,
+  shape = function(cr, width, height)
+    gears.shape.rounded_rect(cr, width, height, 4)
+  end,
+  border_width = 1,
+  border_color = beautiful.bg_focus,
+  maximum_width = 400,
+  offset = { y = 5 },
+  widget = {},
 })
+local rows = { layout = wibox.layout.fixed.vertical }
 
--- Section for Watcher
-local function update(widget, stdout, stderr, exitreason, exitcode)
-  -- Section for Timer and Updater
-  --function update(widget)
+local function setup_menu_item(item) --{{{
+  local row = wibox.widget({ --{{{
+    {
+      {
+        {
+          image = item.icon_name,
+          forced_width = 44,
+          forced_height = 44,
+          widget = wibox.widget.imagebox,
+        },
+        {
+          text = item.name,
+          widget = wibox.widget.textbox,
+        },
+        spacing = 12,
+        layout = wibox.layout.fixed.horizontal,
+      },
+      margins = 8,
+      widget = wibox.container.margin,
+    },
+    bg = beautiful.bg_normal,
+    widget = wibox.container.background,
+  })
+  --}}}
 
-  --local fd = io.popen(status_bin_cmd)
+  -- Change item background on mouse hover{{{
+  row:connect_signal("mouse::leave", function(c)
+    c:set_bg(beautiful.bg_normal)
+  end)
+  row:connect_signal("mouse::enter", function(c)
+    c:set_bg(beautiful.bg_focus)
+  end)
+  --}}}
 
-  -- Section for Timer and Updater
-  --local status = fd:read("*all")
-  -- Section for Watcher
-  local status = stdout
+  -- Change cursor on mouse hover{{{
+  local old_cursor, old_wibox
+  row:connect_signal("mouse::enter", function()
+    local wb = mouse.current_wibox
+    old_cursor, old_wibox = wb.cursor, wb
+    wb.cursor = "hand1"
+  end)
+  row:connect_signal("mouse::leave", function()
+    if old_wibox then
+      old_wibox.cursor = old_cursor
+      old_wibox = nil
+    end
+  end)
+  --}}}
 
-  if string.find(status, "date", 1, true) then
-    widget:set_image(dropbox_status_idle)
-  elseif string.find(status, "Syncing", 1, true) then
-    widget:set_image(dropbox_loading_icon)
-  elseif string.find(status, "Downloading file list", 1, true) then
-    widget:set_image(dropbox_loading_icon)
-  elseif string.find(status, "Connecting", 1, true) then
-    widget:set_image(dropbox_loading_icon)
-  elseif string.find(status, "Starting", 1, true) then
-    widget:set_image(dropbox_loading_icon)
-  elseif string.find(status, "Indexing", 1, true) then
-    widget:set_image(dropbox_loading_icon)
-  elseif string.find(status, "Dropbox isn't running", 1, true) then
-    widget:set_image(dropbox_status_x)
+  -- Mouse click handler{{{
+  row:buttons(awful.util.table.join(awful.button({}, 1, function()
+    popup.visible = not popup.visible
+    awful.spawn.with_shell("DISPLAY= " .. bin_cmd .. item.command)
+  end)))
+  --}}}
+
+  table.insert(rows, row)
+end --}}}
+
+for _, item in ipairs(menu_items) do
+  setup_menu_item(item)
+end
+
+local function update(widget, stdout) --{{{
+  local icon
+  if string.find(stdout, "date", 1, true) then
+    icon = theme.dropbox_status_idle
+  elseif
+    string.find(stdout, "Syncing", 1, true)
+    or string.find(stdout, "Downloading file list", 1, true)
+    or string.find(stdout, "Connecting", 1, true)
+    or string.find(stdout, "Starting", 1, true)
+    or string.find(stdout, "Indexing", 1, true)
+  then
+    icon = dropbox_loading_icon
+  elseif string.find(stdout, "Dropbox isn't running", 1, true) then
+    icon = theme.dropbox_status_x
   end
+  widget:set_image(icon)
 
   if dropbox_number == 1 then
     dropbox_number = 2
-    dropbox_loading_icon = dropbox_status_busy2
+    dropbox_loading_icon = theme.dropbox_status_busy2
   else
     dropbox_number = 1
-    dropbox_loading_icon = dropbox_status_busy1
+    dropbox_loading_icon = theme.dropbox_status_busy1
   end
-end
+end --}}}
 
--- Version with Wacher
--- dropbox_widget:connect_signal("button::press", function(_, _, _, button)
---   if button == 1 then
---     spawn("xdg-open https://dropbox.com", false)
---     --  elseif  (button == 3) then naughty.notify { text = script_path(), timeout = 5, hover_timeout = 0.5 }
---   end
---   spawn.easy_async(status_bin_cmd, function(stdout, stderr, exitreason, exitcode)
---     update(dropbox_widget, stdout, stderr, exitreason, exitcode)
---   end)
--- end)
+watch(bin_cmd .. "status", 1, update, dropbox_widget)
 
-watch(status_bin_cmd, 1, update, dropbox_widget)
+popup:setup(rows)
 
--- Version with Timer and Updater
---update(dropbox_widget)
-
--- Use a prime number to avoid running at the same time as other commands
---mytimer = gears.timer({ timeout = 2 })
---mytimer:connect_signal("timeout", function () update(dropbox_widget)                        end)
---mytimer:connect_signal("timeout", function () update(dropbox_widget)                        end)
---mytimer:start()
-
---do
---  dropbox_widget:buttons(awful.util.table.join(
---    awful.button({ }, 1, function() awful.spawn("xdg-open https://dropbox.com", {})      end)
---    -- DEBUG
---    --awful.button({ }, 3, function() naughty.notify { text = script_path(), timeout = 5, hover_timeout = 0.5 }      end)
---  ))
---end
+-- Mouse click handler{{{
+dropbox_widget:buttons(awful.util.table.join(awful.button({}, 1, function()
+  if popup.visible then
+    popup.visible = not popup.visible
+  else
+    popup:move_next_to(mouse.current_widget_geometry)
+  end
+end)))
+--}}}
 
 return dropbox_widget
+
+-- vim: fdm=marker fdl=0
