@@ -8,7 +8,7 @@ for name in "${patching[@]}"; do
   popd
 done
 
-git submodule update --init --recursive
+git submodule update --remote --recursive
 
 for name in "${patching[@]}"; do
     echo "Patching $name:"
