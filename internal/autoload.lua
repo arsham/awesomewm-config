@@ -60,6 +60,8 @@ run_once({
 })
 run_once({ name = "numlockx", cmd = "numlockx on" })
 run_once({ name = "volumeicon", cmd = "volumeicon" })
+-- run_once({ name = "redshift", cmd = "redshift" })
+-- run_once({ name = "redshift", cmd = "redshift -l 51.52393:-0.10203", kill = "redshift" })
 run_once({ name = "redshift-gtk", cmd = "redshift-gtk", kill = "redshift-gtk" })
 run_once({
   name = "variety",
@@ -67,6 +69,7 @@ run_once({
   kill = "variety",
   sleep = 1,
 })
+-- run_once({ name = "dropbox", cmd = "dropbox", sleep = 3 })
 run_once({ name = "parcellite", cmd = "parcellite", sleep = 3 })
 run_once({ name = "syndaemon", cmd = "syndaemon -i 0.5 -t -K -R" })
 run_once({

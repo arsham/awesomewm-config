@@ -1,7 +1,6 @@
 -- vim: fdm=marker fdl=0
 
 -- Importing Modules {{{
-local awesome, root = awesome, root
 pcall(require, "luarocks.loader")
 
 -- Standard awesome library
@@ -9,18 +8,26 @@ local awful = require("awful")
 require("awful.autofocus")
 require("awful.hotkeys_popup.keys")
 local menubar = require("menubar")
-
-local terminal = "kitty"
-awful.util.terminal = terminal
-menubar.utils.terminal = terminal
-awful.util.shell = "zsh"
-
 local beautiful = require("beautiful")
 local naughty = require("naughty")
+
+local vars = require("internal.variables")
+local terminal = vars.apps.terminal
+awful.util.terminal = terminal
+menubar.utils.terminal = terminal
+awful.util.shell = vars.apps.shell
 --}}}
 
 -- Error handling {{{
 -- Handle runtime errors during startup.
+if awesome.startup_errors then
+  naughty.notify({
+    preset = naughty.config.presets.critical,
+    title = "Startup encountered a problem",
+    text = awesome.startup_errors,
+  })
+end
+
 naughty.connect_signal("request::display_error", function(message, startup)
   naughty.notification({
     urgency = "critical",
@@ -33,7 +40,6 @@ end)
 do
   local in_error = false
   awesome.connect_signal("debug::error", function(err)
-    -- Make sure we don't go into an endless error loop
     if in_error then
       return
     end
@@ -41,7 +47,7 @@ do
 
     naughty.notify({
       preset = naughty.config.presets.critical,
-      title = "Oops, an error happened!",
+      title = "Error",
       text = tostring(err),
     })
     in_error = false
@@ -50,9 +56,10 @@ end
 -- }}}
 
 beautiful.init(require("theme.theme"))
-require("arsham.menu")
-require("arsham.wibar")
-root.keys(require("arsham.keybindings").globalkeys)
-require("arsham.rules")
-require("arsham.signals")
-require("arsham.autoload")
+require("internal.menu")
+require("internal.layouts")
+require("internal.wibar")
+root.keys(require("internal.keybindings").globalkeys)
+require("internal.rules")
+require("internal.signals")
+require("internal.autoload")

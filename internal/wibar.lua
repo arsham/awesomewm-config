@@ -1,4 +1,3 @@
-local client, tag = client, tag
 local modkey = "Mod4"
 
 local gears = require("gears") --Utilities such as color parsing and objects
@@ -11,27 +10,11 @@ local arsham = require("arsham.widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
 
-awful.util.tagnames = { "➊", "➋", "➌", "➍", "➎", "➏", "➐", "➑", "➒", "" }
+awful.util.tagnames = { "➊", "➋", "➌", "➍", "➎", "➏", "➐", "➑", "" }
+-- awful.util.tagnames = { "➊", "➋", "➌", "➍", "➎", "➏", "➐", "➑", "➒", "" }
 awful.layout.suit.tile.left.mirror = true
 
 naughty.config.defaults["icon_size"] = 100
-
-tag.connect_signal("request::default_layouts", function()
-  awful.layout.append_default_layouts({
-    awful.layout.suit.tile,
-    awful.layout.suit.tile.left,
-    awful.layout.suit.tile.bottom,
-    awful.layout.suit.tile.top,
-    awful.layout.suit.magnifier,
-    awful.layout.suit.floating,
-    lain.layout.cascade,
-    lain.layout.cascade.tile,
-    lain.layout.centerwork,
-    lain.layout.centerwork.horizontal,
-    lain.layout.termfair,
-    lain.layout.termfair.center,
-  })
-end)
 
 -- Disable window snapping
 awful.mouse.snap.edge_enabled = false
@@ -110,9 +93,6 @@ local textclock = function()
   return widget
 end
 
--- Keyboard map indicator and switcher
-local mykeyboardlayout = awful.widget.keyboardlayout()
-
 -- Connection For Each Screen {{{
 awful.screen.connect_for_each_screen(function(s)
   set_wallpaper(s)
@@ -179,7 +159,7 @@ awful.screen.connect_for_each_screen(function(s)
       require("arsham.widgets.dropbox"),
       wibox.widget.systray(),
       textclock(),
-      -- mykeyboardlayout,
+      -- awful.widget.keyboardlayout(), -- Keyboard map indicator and switcher
       s.mylayoutbox,
     },
   }) --}}}

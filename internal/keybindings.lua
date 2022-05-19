@@ -1,21 +1,21 @@
 -- vim: fdm=marker fdl=1
 -- Imports {{{2
-local awesome, client = awesome, client
+local vars = require("internal.variables")
 
-local terminal = "kitty"
-local filemanager = "pcmanfm"
-local browser = "brave"
+local terminal = vars.apps.terminal
+local filemanager = vars.apps.filemanager
+local browser = vars.apps.browser
 
-local modkey = "Mod4"
-local altkey = "Mod1"
-local ctrlkey = "Control"
-local shiftkey = "Shift"
-local leftkey = "Left"
-local rightkey = "Right"
-local escK = "Escape"
-local returnkey = "Return"
-local spacekey = "space"
-local tabkey = "Tab"
+local modkey = vars.keys.mod
+local altkey = vars.keys.alt
+local ctrlkey = vars.keys.ctrl
+local shiftkey = vars.keys.shift
+local leftkey = vars.keys.left
+local rightkey = vars.keys.right
+local escK = vars.keys.esc
+local returnkey = vars.keys.ret
+local spacekey = vars.keys.space
+local tabkey = vars.keys.tab
 
 local gears = require("gears") --Utilities such as color parsing and objects
 local awful = require("awful") --Everything related to window managment
@@ -23,10 +23,6 @@ require("awful.autofocus")
 local beautiful = require("beautiful") -- Theme handling library
 local menubar = require("menubar")
 local lain = require("lain")
-
--- Enable hotkeys help widget for VIM and other apps when client with a
--- matching name is opened:
-local hotkeys_popup = require("awful.hotkeys_popup")
 --}}}
 
 local function _opt(desc, group)
@@ -38,10 +34,10 @@ local globalkeys = gears.table.join(
   -- Core {{{
   awful.key({ modkey, shiftkey }, "q", awesome.quit, _opt("quit awesome", "awesome")),
 
-  awful.key({ modkey }, "s", hotkeys_popup.show_help, _opt("show help", "awesome")),
+  -- awful.key({ modkey }, "s", hotkeys_popup.show_help, _opt("show help", "awesome")),
   awful.key({ modkey, shiftkey }, "r", awesome.restart, _opt("reload awesome", "awesome")),
   awful.key({ modkey }, "w", function()
-    mymainmenu:show()
+    awful.util.mymainmenu:show()
   end, _opt("show main menu", "awesome")),
   --}}}
 
@@ -51,8 +47,13 @@ local globalkeys = gears.table.join(
   awful.key({ modkey }, "l", awful.tag.viewnext, _opt("view next", "tag")),
   awful.key({ ctrlkey, altkey }, leftkey, awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ ctrlkey, altkey }, rightkey, awful.tag.viewnext, _opt("view next", "tag")),
-  awful.key({ modkey }, tabkey, awful.tag.viewnext, _opt("view next", "tag")),
-  awful.key({ modkey, shiftkey }, tabkey, awful.tag.viewprev, _opt("view previous", "tag")),
+
+  -- awful.key({ modkey }, tabkey, awful.tag.viewnext, _opt("view next", "tag")),
+  -- awful.key({ modkey, shiftkey }, tabkey, awful.tag.viewprev, _opt("view previous", "tag")),
+  awful.key({ modkey }, tabkey, function()
+    awful.spawn.with_shell("rofi -show window -modi window ")
+  end, { description = "swap with next client by index", group = "client" }),
+
   awful.key({ modkey, shiftkey }, "n", lain.util.add_tag, _opt("add tag", "tag")),
   awful.key({ modkey, shiftkey }, "e", lain.util.rename_tag, _opt("rename tag", "tag")),
   awful.key({ modkey, shiftkey }, leftkey, function()
@@ -72,12 +73,15 @@ local globalkeys = gears.table.join(
     awful.client.swap.byidx(-1)
   end, _opt("swap with previous client by index", "client")),
   awful.key({ modkey }, "u", awful.client.urgent.jumpto, _opt("jump to urgent client", "client")),
+
   awful.key({ altkey }, tabkey, function()
-    awful.client.focus.history.previous()
-    if client.focus then
-      client.focus:raise()
-    end
-  end, _opt("go back", "client")),
+    -- awful.client.focus.history.previous()
+    -- if client.focus then
+    --   client.focus:raise()
+    -- end
+    -- end, _opt("go back", "client")),
+    awful.client.focus.byidx(1)
+  end, _opt("focus next by index", "client")),
 
   awful.key({ modkey }, "j", function()
     awful.client.focus.byidx(1)
@@ -135,7 +139,7 @@ local globalkeys = gears.table.join(
   awful.key({ modkey }, "b", function()
     awful.spawn(browser)
   end, _opt(browser, "launcher")),
-  awful.key({ modkey }, "f", function()
+  awful.key({ modkey }, "e", function()
     awful.util.spawn(filemanager)
   end, _opt(filemanager, "launcher")),
 
@@ -163,6 +167,11 @@ local globalkeys = gears.table.join(
   awful.key({ modkey }, "p", function()
     menubar.show()
   end, _opt("show the menubar", "launcher")),
+
+  awful.key({ modkey }, "c", function()
+    awful.spawn.with_shell("rofi -show calc -modi calc -no-show-match -no-sort")
+  end, { description = "show calculator", group = "launcher" }),
+
   --}}}
 
   -- Session management {{{
@@ -256,7 +265,7 @@ local clientkeys = gears.table.join(
   end, _opt("move to screen", "client")),
 
   -- Toggling {{{
-  awful.key({ modkey }, "t", function(c)
+  awful.key({ modkey, ctrlkey }, "t", function(c)
     c.ontop = not c.ontop
   end, _opt("toggle keep on top", "client")),
   awful.key({ modkey }, "n", function(c)
@@ -276,11 +285,11 @@ local clientkeys = gears.table.join(
     c.maximized = not c.maximized
     c:raise()
   end, _opt("(un)maximize", "client")),
-  awful.key({ modkey, ctrlkey }, "m", function(c)
+  awful.key({ modkey, ctrlkey }, "h", function(c)
     c.maximized_vertical = not c.maximized_vertical
     c:raise()
   end, _opt("(un)maximize vertically", "client")),
-  awful.key({ modkey, shiftkey }, "m", function(c)
+  awful.key({ modkey, ctrlkey }, "v", function(c)
     c.maximized_horizontal = not c.maximized_horizontal
     c:raise()
   end, _opt("(un)maximize horizontally", "client")),
@@ -292,7 +301,7 @@ local clientkeys = gears.table.join(
   end, _opt("toggle fullscreen", "client")),
   awful.key(
     { modkey, ctrlkey },
-    spacekey,
+    "f",
     awful.client.floating.toggle,
     _opt("toggle floating", "client")
   ),

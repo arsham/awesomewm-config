@@ -1,16 +1,9 @@
-local awesome, client = awesome, client
 local beautiful = require("beautiful") -- Theme handling library
 local awful = require("awful") --Everything related to window managment
 
 -- Signals {{{
 -- Signal function to execute when a new client appears.
 client.connect_signal("manage", function(c)
-  -- Set the windows at the slave,
-  -- i.e. put it at the end of others instead of setting it master.
-  -- if not awesome.startup then
-  --   awful.client.setslave(c)
-  -- end
-
   if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
     -- Prevent clients from being unreachable after screen count changes.
     awful.placement.no_offscreen(c)
@@ -71,11 +64,35 @@ ruled.notification.connect_signal("request::rules", function()
 end)
 
 -- Store notifications to the file
-local naughty = require("naughty")
-client.connect_signal("added", function(n)
-  local file = io.open(os.getenv("HOME") .. "/.config/awesome/tmp/naughty_history", "a")
-  file:write(n.title .. ": " .. n.message .. "\n")
-  file:close()
-end)
+-- client.connect_signal("added", function(n)
+--   local file = io.open(os.getenv("HOME") .. "/.config/awesome/tmp/naughty_history", "a")
+--   file:write(n.title .. ": " .. n.message .. "\n")
+--   file:close()
+-- end)
 
+local naughty = require("naughty")
+-- local cst = require("naughty.constants")
+
+naughty.connect_signal("destroyed", function(n, reason)
+  if not n.clients then
+    return
+  end
+  -- if reason == cst.notification_closed_reason.dismissed_by_user then
+  -- local jumped = false
+  for _, c in ipairs(n.clients) do
+    if c.class == "Slack" then
+      c.urgent = true
+      -- if jumped then
+      --   c:activate({
+      --     context = "client.jumpto",
+      --     raise = true,
+      --   })
+      -- else
+      --   c:jump_to()
+      --   jumped = true
+      -- end
+    end
+  end
+  -- end
+end)
 -- }}}

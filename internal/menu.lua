@@ -2,21 +2,24 @@ local awesome, root = awesome, root
 local awful = require("awful")
 local freedesktop = require("freedesktop")
 local gears = require("gears")
+-- Enable hotkeys help widget for VIM and other apps when client with a
+-- matching name is opened:
 local hotkeys_popup = require("awful.hotkeys_popup")
-
-local myawesomemenu = {
-  {
-    "hotkeys",
-    function()
-      return false, hotkeys_popup.show_help
-    end,
-  },
-  { "arandr", "arandr" },
-}
 
 awful.util.mymainmenu = freedesktop.menu.build({
   before = {
-    { "Awesome", myawesomemenu },
+    {
+      "Favourites",
+      {
+        {
+          "hotkeys",
+          function()
+            return hotkeys_popup.show_help()
+          end,
+        },
+        { "Display Settings", "arandr" },
+      },
+    },
   },
   after = {
     { "Terminal", awful.util.terminal },
@@ -32,13 +35,12 @@ awful.util.mymainmenu = freedesktop.menu.build({
   },
 })
 
-local mymainmenu = awful.util.mymainmenu
 -- }}}
 
 -- Mouse bindings {{{
 root.buttons(gears.table.join(
   awful.button({}, 3, function()
-    mymainmenu:toggle()
+    awful.util.mymainmenu:toggle()
   end),
   awful.button({}, 4, awful.tag.viewnext),
   awful.button({}, 5, awful.tag.viewprev)
