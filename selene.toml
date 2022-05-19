@@ -1,0 +1,4 @@
+std="lua54"
+
+[rules]
+multiple_statements = "allow"

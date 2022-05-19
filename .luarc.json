@@ -1,0 +1,16 @@
+{
+  "diagnostics": {
+    "enable": true,
+    "globals": ["awesome", "tag", "client", "root"],
+    "disable": ["lowercase-global"]
+  },
+  "runtime": {
+    "version1": "Lua 5.4",
+    "version": "LuaJIT",
+    "pathStrict": true
+  },
+  "workspace": {
+    "ignoreDir": ["tmp"],
+    "library": ["internal"]
+  }
+}

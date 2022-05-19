@@ -1,0 +1,11 @@
+[selene]
+base = "lua52"
+
+[awesome]
+any = true
+
+[_GS]
+any = true
+
+[root]
+any = true
