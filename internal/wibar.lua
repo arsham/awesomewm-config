@@ -1,7 +1,7 @@
 local modkey = "Mod4"
 
-local gears = require("gears") --Utilities such as color parsing and objects
-local awful = require("awful") --Everything related to window managment
+local gears = require("gears")
+local awful = require("awful")
 require("awful.autofocus")
 local wibox = require("wibox") -- Widget and layout library
 local beautiful = require("beautiful") -- Theme handling library
@@ -138,6 +138,13 @@ awful.screen.connect_for_each_screen(function(s)
 
   s.mywibox = awful.wibar({ position = "top", screen = s, height = 55 })
 
+  local battery_widget = require("awesome-wm-widgets.batteryarc-widget.batteryarc")({
+    font = "Play Bold 7",
+    show_current_level = true,
+    arc_thickness = 2,
+    size = 35,
+  })
+
   -- Add widgets to the wibox {{{
   s.mywibox:setup({
     layout = wibox.layout.align.horizontal,
@@ -157,6 +164,7 @@ awful.screen.connect_for_each_screen(function(s)
       wibox.container.margin(arsham.fanwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
       wibox.container.margin(arsham.memwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
       require("arsham.widgets.dropbox"),
+      wibox.container.margin(battery_widget, dpi(4), dpi(8), dpi(4), dpi(4)),
       wibox.widget.systray(),
       textclock(),
       -- awful.widget.keyboardlayout(), -- Keyboard map indicator and switcher
