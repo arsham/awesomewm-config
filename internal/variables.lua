@@ -28,6 +28,9 @@ local vars = {
     position = "top",
     height = 55,
   },
+  theme = {
+    icon_size = 100,
+  },
 }
 
 return vars

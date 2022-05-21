@@ -3,19 +3,16 @@ local modkey = "Mod4"
 local gears = require("gears")
 local awful = require("awful")
 require("awful.autofocus")
-local wibox = require("wibox") -- Widget and layout library
-local beautiful = require("beautiful") -- Theme handling library
+local wibox = require("wibox")
+local beautiful = require("beautiful")
 local lain = require("lain")
 local arsham = require("arsham.widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
+local vars = require("internal.variables")
+naughty.config.defaults["icon_size"] = vars.theme.icon_size
 
-awful.util.tagnames = { "➊", "➋", "➌", "➍", "➎", "➏", "➐", "➑", "" }
--- awful.util.tagnames = { "➊", "➋", "➌", "➍", "➎", "➏", "➐", "➑", "➒", "" }
 awful.layout.suit.tile.left.mirror = true
-
-naughty.config.defaults["icon_size"] = 100
-
 -- Disable window snapping
 awful.mouse.snap.edge_enabled = false
 
@@ -96,10 +93,8 @@ end
 -- Connection For Each Screen {{{
 awful.screen.connect_for_each_screen(function(s)
   set_wallpaper(s)
-
   -- Each screen has its own tag table.
-  awful.tag(awful.util.tagnames, s, awful.layout.layouts[1])
-
+  awful.tag(vars.tags, s, awful.layout.layouts[1])
   -- Create a promptbox for each screen
   s.mypromptbox = awful.widget.prompt()
 
@@ -136,7 +131,12 @@ awful.screen.connect_for_each_screen(function(s)
     buttons = tasklist_buttons,
   }) --}}}
 
-  s.mywibox = awful.wibar({ position = "top", screen = s, height = 55 })
+  s.mywibox =
+    awful.wibar({
+      position = vars.wibar.position,
+      screen = s,
+      height = vars.wibar.height,
+    })
 
   local battery_widget = require("awesome-wm-widgets.batteryarc-widget.batteryarc")({
     font = "Play Bold 7",
@@ -167,9 +167,7 @@ awful.screen.connect_for_each_screen(function(s)
       wibox.container.margin(battery_widget, dpi(4), dpi(8), dpi(4), dpi(4)),
       wibox.widget.systray(),
       textclock(),
-      -- awful.widget.keyboardlayout(), -- Keyboard map indicator and switcher
       s.mylayoutbox,
     },
   }) --}}}
-  -- require("arsham.dropbox")
 end) -- }}}

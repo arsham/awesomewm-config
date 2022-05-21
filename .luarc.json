@@ -1,7 +1,7 @@
 {
   "diagnostics": {
     "enable": true,
-    "globals": ["awesome", "tag", "client", "root"],
+    "globals": ["awesome", "tag", "client", "root", "screen", "mouse"],
     "disable": ["lowercase-global"]
   },
   "runtime": {
