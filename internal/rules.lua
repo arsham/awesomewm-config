@@ -305,6 +305,26 @@ ruled.client.connect_signal("request::rules", function()
     id = "slack",
     rule = { class = "[sS]lack" },
     properties = { tag = awful.screen.focused().tags[9] },
+  })
+
+  ruled.client.append_rule({
+    id = "floating_slack",
+    rule = {
+      class = "[sS]lack",
+      except = {
+        "NORMAL",
+      },
+    },
+    properties = {
+      skip_decoration = true,
+      ontop = false,
+      floating = true,
+      focus = awful.client.focus.filter,
+      raise = false,
+      keys = keys.clientkeys,
+      buttons = keys.clientbuttons,
+      placement = awful.placement.centered,
+    },
   }) --}}}
 
   -- Image viewers {{{
@@ -360,7 +380,7 @@ end)
 
 -- Normally we'd do this with a rule, but some program like spotify doesn't set
 -- its class or name until after it starts up, so we need to catch that signal.
-client.connect_signal("property::class", function(c)
+client.connect_signal("property::class", function(c) --{{{
   if c.class == "Spotify" then
     local window_mode = false
 
@@ -404,6 +424,6 @@ client.connect_signal("property::class", function(c)
       end
     end
   end
-end)
+end) --}}}
 
 -- vim: fdm=marker fdl=0
