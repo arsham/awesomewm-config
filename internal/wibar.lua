@@ -163,11 +163,13 @@ awful.screen.connect_for_each_screen(function(s)
       wibox.container.margin(arsham.cpuwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
       wibox.container.margin(arsham.fanwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
       wibox.container.margin(arsham.memwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
-      require("arsham.widgets.dropbox"),
       wibox.container.margin(battery_widget, dpi(4), dpi(8), dpi(4), dpi(4)),
+      require("internal.widgets.dropbox"),
       wibox.widget.systray(),
       textclock(),
       s.mylayoutbox,
     },
   }) --}}}
 end) -- }}}
+
+-- vim: fdm=marker fdl=0

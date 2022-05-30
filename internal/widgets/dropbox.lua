@@ -1,16 +1,11 @@
---{{---| Dropbox |-------------------------------------------------------------------------------------------------------------
-local mouse = mouse
 local wibox = require("wibox")
-local watch = require("awful.widget.watch")
 local awful = require("awful")
 local gears = require("gears")
 local beautiful = require("beautiful")
+local hider = require("internal.lib.outside_click_hides")
+local theme = require("theme.theme")
 
 local bin_cmd = "dropbox-cli "
-
-local theme = require("theme.theme")
-local dropbox_loading_icon = theme.dropbox_loading_icon
-local dropbox_number = 1
 
 local dropbox_widget = wibox.widget({ --{{{
   {
@@ -24,6 +19,17 @@ local dropbox_widget = wibox.widget({ --{{{
     self.icon.image = path
   end,
 }) --}}}
+
+local tooltip = awful.tooltip({
+  objects = { dropbox_widget },
+  text = "Starting...",
+})
+
+client.connect_signal("go::dropbox:value", function(msg, icon)
+  icon = theme[icon]
+  tooltip:set_markup(msg)
+  dropbox_widget:set_image(icon)
+end)
 
 local menu_items = { --{{{
   { name = "Stop", icon_name = theme.dropbox_status_x, command = "stop" },
@@ -82,8 +88,10 @@ local function setup_menu_item(item) --{{{
   local old_cursor, old_wibox
   row:connect_signal("mouse::enter", function()
     local wb = mouse.current_wibox
-    old_cursor, old_wibox = wb.cursor, wb
-    wb.cursor = "hand1"
+    if wb then
+      old_cursor, old_wibox = wb.cursor, wb
+      wb.cursor = "hand1"
+    end
   end)
   row:connect_signal("mouse::leave", function()
     if old_wibox then
@@ -107,35 +115,8 @@ for _, item in ipairs(menu_items) do
   setup_menu_item(item)
 end
 
-local function update(widget, stdout) --{{{
-  local icon
-  if string.find(stdout, "date", 1, true) then
-    icon = theme.dropbox_status_idle
-  elseif
-    string.find(stdout, "Syncing", 1, true)
-    or string.find(stdout, "Downloading file list", 1, true)
-    or string.find(stdout, "Connecting", 1, true)
-    or string.find(stdout, "Starting", 1, true)
-    or string.find(stdout, "Indexing", 1, true)
-  then
-    icon = dropbox_loading_icon
-  elseif string.find(stdout, "Dropbox isn't running", 1, true) then
-    icon = theme.dropbox_status_x
-  end
-  widget:set_image(icon)
-
-  if dropbox_number == 1 then
-    dropbox_number = 2
-    dropbox_loading_icon = theme.dropbox_status_busy2
-  else
-    dropbox_number = 1
-    dropbox_loading_icon = theme.dropbox_status_busy1
-  end
-end --}}}
-
-watch(bin_cmd .. "status", 1, update, dropbox_widget)
-
 popup:setup(rows)
+hider.popup(popup, nil, true)
 
 -- Mouse click handler{{{
 dropbox_widget:buttons(awful.util.table.join(awful.button({}, 1, function()
