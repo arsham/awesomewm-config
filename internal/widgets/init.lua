@@ -117,10 +117,15 @@ end
 local function thermalwidget_cpu()
   return generic_thermal("go::cpu:temp")
 end
+local function thermalwidget_gpu()
+  return generic_thermal("go::gpu:temp")
+end
+
 
 return {
   cpuwidget = cpuwidget,
   thermal_cpu = thermalwidget_cpu,
+  thermal_gpu = thermalwidget_gpu,
   fanwidget = fanwidget,
 }
 
