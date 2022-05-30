@@ -1,0 +1,13 @@
+[Unit]
+Description=Awesome Sensors
+After=display-manager.service
+
+[Service]
+Type=simple
+ExecStart=/home/arsham/go/bin/awesome-sensors
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=default.target
