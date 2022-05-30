@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"os"
 	"os/signal"
@@ -64,6 +65,17 @@ func main() {
 	go func() {
 		for b := range battery {
 			cmdCh <- fmt.Sprintf(`client.emit_signal("go::battery:value", %q, %q)`, b.msg, b.icon)
+		}
+	}()
+
+	gpuCh, err := newGPU(ctx)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	go func() {
+		for value := range gpuCh {
+			cmdCh <- fmt.Sprintf(`client.emit_signal("go::gpu:temp", %d)`, value.temp)
 		}
 	}()
 
