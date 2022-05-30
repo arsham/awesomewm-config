@@ -40,4 +40,15 @@ luac.out
 *.hex
 
 tmp/
-awesome-wm-widgets
+lain/
+freedesktop/
+vicious/
+awesome-wm-widgets/
+awesome/
+awful/
+beautiful/
+gears/
+menubar/
+naughty/
+ruled/
+wibox/
