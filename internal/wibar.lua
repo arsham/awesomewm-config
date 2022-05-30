@@ -6,7 +6,6 @@ require("awful.autofocus")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local lain = require("lain")
-local arsham = require("arsham.widgets")
 local widgets = require("internal.widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
@@ -92,7 +91,7 @@ local textclock = function()
 end
 
 -- Connection For Each Screen {{{
-awful.screen.connect_for_each_screen(function(s)
+screen.connect_signal("request::desktop_decoration", function(s)
   set_wallpaper(s)
   -- Each screen has its own tag table.
   awful.tag(vars.tags, s, awful.layout.layouts[1])
@@ -102,8 +101,8 @@ awful.screen.connect_for_each_screen(function(s)
   -- Layout indicator icon {{{
   -- which will contain an icon indicating which layout we're using. We need
   -- one layoutbox per screen.
-  s.mylayoutbox = awful.widget.layoutbox(s)
-  s.mylayoutbox:buttons(gears.table.join(
+  mylayoutbox = awful.widget.layoutbox(s)
+  mylayoutbox:buttons(gears.table.join(
     awful.button({}, 1, function()
       awful.layout.inc(1)
     end),
@@ -132,28 +131,31 @@ awful.screen.connect_for_each_screen(function(s)
     buttons = tasklist_buttons,
   }) --}}}
 
-  s.mywibox =
-    awful.wibar({
-      position = vars.wibar.position,
-      screen = s,
-      height = vars.wibar.height,
-    })
+  mywibox = awful.wibar({
+    position = vars.wibar.position,
+    screen = s,
+    height = vars.wibar.height,
+  })
 
+  local function with_margin(widget)
+    return wibox.container.margin(widget, dpi(4), dpi(8), dpi(4), dpi(4))
+  end
 
   -- Add widgets to the wibox {{{
-  s.mywibox:setup({
+  mywibox:setup({
     layout = wibox.layout.align.horizontal,
-    { -- Left widgets
+    {
       layout = wibox.layout.fixed.horizontal,
       taglist,
-      arsham.net_down_speed,
-      arsham.net_down_graph,
-      arsham.net_up_speed,
-      arsham.net_up_graph,
+      with_margin(wibox.widget({
+        widgets.netgraph(),
+        widgets.netspeed(),
+        layout = wibox.layout.stack,
+      })),
       s.mypromptbox,
     },
-    tasklist, -- Middle widget
-    { -- Right widgets
+    tasklist,
+    {
       layout = wibox.layout.fixed.horizontal,
       with_margin(widgets.thermal_cpu()),
       with_margin(widgets.cpuwidget()),
@@ -164,7 +166,7 @@ awful.screen.connect_for_each_screen(function(s)
       require("internal.widgets.battery"),
       wibox.widget.systray(),
       textclock(),
-      s.mylayoutbox,
+      mylayoutbox,
     },
   }) --}}}
 end) -- }}}

@@ -142,6 +142,61 @@ local function memwidget() --{{{
   return w
 end --}}}
 
+local function get_net_graph() --{{{
+  local down_graph = go_widget({
+    bg = "#232627",
+    scale = true,
+    width = 250,
+    to = { 0, 55 },
+    stops = {
+      { 0.5, "#948809" },
+    },
+    delay = 0.5,
+    tooltip = "Download Speed",
+  })
+  local up_graph = go_widget({
+    bg = "#232627",
+    scale = true,
+    to = { 0, 55 },
+    stops = {
+      { 0.5, "#948809" },
+    },
+    delay = 0.5,
+    tooltip = "Upload Speed",
+  })
+  client.connect_signal("go::network:value", function(_, _, up, down)
+    up_graph:add_value(up)
+    down_graph:add_value(down)
+  end)
+
+  return wibox.widget({
+    down_graph,
+    up_graph,
+    layout = wibox.layout.fixed.horizontal,
+  })
+end
+--}}}
+
+local function netspeed() --{{{
+  local up_widget = wibox.widget.textbox()
+  local down_widget = wibox.widget.textbox()
+  local widget = wibox.widget({
+    wibox.widget.textbox(markup.fontfg(sign_font, sign_colour, " ")),
+    down_widget,
+    wibox.widget.textbox(markup.fontfg(sign_font, sign_colour, " 祝")),
+    up_widget,
+    layout = wibox.layout.fixed.horizontal,
+  })
+  client.connect_signal("go::network:value", function(up, down)
+    up = fmt.left_pad_to(8, up)
+    down = fmt.left_pad_to(8, down)
+    up_widget.markup = markup.fontfg(widget_font, widget_color, up)
+    down_widget.markup = markup.fontfg(widget_font, widget_color, down)
+  end)
+
+  return widget
+end
+--}}}
 
 return {
   cpuwidget = cpuwidget,
@@ -149,6 +204,8 @@ return {
   thermal_gpu = thermalwidget_gpu,
   memwidget = memwidget,
   fanwidget = fanwidget,
+  netgraph = get_net_graph,
+  netspeed = netspeed,
 }
 
 -- vim: fdm=marker fdl=0
