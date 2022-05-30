@@ -1,5 +1,3 @@
--- vim: fdm=marker fdl=0
-
 -- Importing Modules {{{
 pcall(require, "luarocks.loader")
 
@@ -62,5 +60,9 @@ require("internal.rules")
 require("internal.signals")
 require("internal.osd")
 require("internal.autoload")
+
+collectgarbage()
+collectgarbage("setpause", 110)
+collectgarbage("setstepmul", 1000)
 
 -- vim: fdm=marker fdl=0
