@@ -7,6 +7,7 @@ local wibox = require("wibox")
 local beautiful = require("beautiful")
 local lain = require("lain")
 local arsham = require("arsham.widgets")
+local widgets = require("internal.widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
 local vars = require("internal.variables")
@@ -154,9 +155,11 @@ awful.screen.connect_for_each_screen(function(s)
     tasklist, -- Middle widget
     { -- Right widgets
       layout = wibox.layout.fixed.horizontal,
-      wibox.container.margin(arsham.cpuwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
-      wibox.container.margin(arsham.fanwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
       wibox.container.margin(arsham.memwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
+      with_margin(widgets.thermal_cpu()),
+      with_margin(widgets.cpuwidget()),
+      with_margin(widgets.fanwidget()),
+      with_margin(widgets.thermal_gpu()),
       require("internal.widgets.dropbox"),
       require("internal.widgets.battery"),
       wibox.widget.systray(),
