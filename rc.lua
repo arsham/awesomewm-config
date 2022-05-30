@@ -8,9 +8,7 @@ local awful = require("awful")
 require("awful.autofocus")
 require("awful.hotkeys_popup.keys")
 local menubar = require("menubar")
-local beautiful = require("beautiful")
 local naughty = require("naughty")
-
 local vars = require("internal.variables")
 local terminal = vars.apps.terminal
 awful.util.terminal = terminal
@@ -55,11 +53,14 @@ do
 end
 -- }}}
 
-beautiful.init(require("theme.theme"))
+require("theme.theme")
 require("internal.menu")
 require("internal.layouts")
 require("internal.wibar")
-root.keys(require("internal.keybindings").globalkeys)
+require("internal.keybindings")
 require("internal.rules")
 require("internal.signals")
+require("internal.osd")
 require("internal.autoload")
+
+-- vim: fdm=marker fdl=0
