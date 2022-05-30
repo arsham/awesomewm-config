@@ -10,6 +10,8 @@ local widgets = require("internal.widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
 local vars = require("internal.variables")
+local hider = require("internal.lib.outside_click_hides")
+
 naughty.config.defaults["icon_size"] = vars.theme.icon_size
 
 awful.layout.suit.tile.left.mirror = true
@@ -61,7 +63,7 @@ local tasklist_buttons = gears.table.join(
     end
   end),
   awful.button({}, 3, function()
-    awful.menu.client_list({ theme = { width = 250 } })
+    hider.menu(awful.menu.client_list({ theme = { width = 1400 } }), nil, true)
   end),
   awful.button({}, 4, function()
     awful.client.focus.byidx(1)

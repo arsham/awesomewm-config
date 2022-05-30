@@ -1,19 +1,18 @@
 local beautiful = require("beautiful") -- Theme handling library
 local awful = require("awful") --Everything related to window managment
 
--- Signals {{{
--- Signal function to execute when a new client appears.
+-- Signal function to execute when a new client appears.{{{
 client.connect_signal("manage", function(c)
   if awesome.startup and not c.size_hints.user_position and not c.size_hints.program_position then
     -- Prevent clients from being unreachable after screen count changes.
     awful.placement.no_offscreen(c)
   end
-end)
+end) --}}}
 
--- Enable sloppy focus, so that focus follows mouse.
+-- Enable sloppy focus, so that focus follows mouse.{{{
 client.connect_signal("mouse::enter", function(c)
   c:emit_signal("request::activate", "mouse_enter", { raise = false })
-end)
+end) --}}}
 
 client.connect_signal("focus", function(c)
   c.border_color = beautiful.border_focus
@@ -22,7 +21,7 @@ client.connect_signal("unfocus", function(c)
   c.border_color = beautiful.border_normal
 end)
 
--- No border for maximized clients
+-- No border for maximized clients{{{
 local function border_adjust(c)
   if c.maximized then -- no borders if only 1 client visible
     c.border_width = 0
@@ -30,7 +29,7 @@ local function border_adjust(c)
     c.border_width = beautiful.border_width
     c.border_color = beautiful.border_focus
   end
-end
+end --}}}
 
 client.connect_signal("property::maximized", border_adjust)
 
@@ -50,49 +49,4 @@ client.connect_signal("property::maximized", border_adjust)
 --      end
 --  end)
 
--- {{{ Notifications
-local ruled = require("ruled")
-ruled.notification.connect_signal("request::rules", function()
-  -- All notifications will match this rule.
-  ruled.notification.append_rule({
-    rule = {},
-    properties = {
-      screen = awful.screen.preferred,
-      --implicit_timeout = 5,
-    },
-  })
-end)
-
--- Store notifications to the file
--- client.connect_signal("added", function(n)
---   local file = io.open(os.getenv("HOME") .. "/.config/awesome/tmp/naughty_history", "a")
---   file:write(n.title .. ": " .. n.message .. "\n")
---   file:close()
--- end)
-
-local naughty = require("naughty")
--- local cst = require("naughty.constants")
-
-naughty.connect_signal("destroyed", function(n, reason)
-  if not n.clients then
-    return
-  end
-  -- if reason == cst.notification_closed_reason.dismissed_by_user then
-  -- local jumped = false
-  for _, c in ipairs(n.clients) do
-    if c.class == "Slack" then
-      c.urgent = true
-      -- if jumped then
-      --   c:activate({
-      --     context = "client.jumpto",
-      --     raise = true,
-      --   })
-      -- else
-      --   c:jump_to()
-      --   jumped = true
-      -- end
-    end
-  end
-  -- end
-end)
--- }}}
+-- vim: fdm=marker fdl=0

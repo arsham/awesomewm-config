@@ -3,6 +3,7 @@
 local vars = require("internal.variables")
 
 local terminal = vars.apps.terminal
+local aux_terminal = vars.apps.aux_terminal
 local filemanager = vars.apps.filemanager
 local browser = vars.apps.browser
 
@@ -12,7 +13,9 @@ local ctrlkey = vars.keys.ctrl
 local shiftkey = vars.keys.shift
 local leftkey = vars.keys.left
 local rightkey = vars.keys.right
-local escK = vars.keys.esc
+local upkey = vars.keys.up
+local downkey = vars.keys.down
+local esckey = vars.keys.esc
 local returnkey = vars.keys.ret
 local spacekey = vars.keys.space
 local tabkey = vars.keys.tab
@@ -23,11 +26,21 @@ require("awful.autofocus")
 local beautiful = require("beautiful") -- Theme handling library
 local menubar = require("menubar")
 local lain = require("lain")
+local gmath = require("gears.math")
+local gtable = require("gears.table")
 --}}}
 
 local function _opt(desc, group)
   return { description = desc, group = group }
 end
+
+local next_value = vars.extra_tags[1]
+local function next_random_icon()
+  next_value = gtable.cycle_value(vars.extra_tags, next_value)
+  return next_value
+end
+
+local function nilfn() end
 
 -- Global Keys {{{
 local globalkeys = gears.table.join(
@@ -42,24 +55,26 @@ local globalkeys = gears.table.join(
   --}}}
 
   -- Tags {{{
-  awful.key({ modkey }, escK, awful.tag.history.restore, _opt("go back", "tag")),
+  awful.key({ modkey }, esckey, awful.tag.history.restore, _opt("go back", "tag")),
   awful.key({ modkey }, "h", awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ modkey }, "l", awful.tag.viewnext, _opt("view next", "tag")),
   awful.key({ ctrlkey, altkey }, leftkey, awful.tag.viewprev, _opt("view previous", "tag")),
+  awful.key({ ctrlkey, altkey }, "h", awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ ctrlkey, altkey }, rightkey, awful.tag.viewnext, _opt("view next", "tag")),
+  awful.key({ ctrlkey, altkey }, "l", awful.tag.viewnext, _opt("view next", "tag")),
 
   -- awful.key({ modkey }, tabkey, awful.tag.viewnext, _opt("view next", "tag")),
   -- awful.key({ modkey, shiftkey }, tabkey, awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ modkey }, tabkey, function()
-    awful.spawn.with_shell("rofi -show window -modi window ")
+    awful.spawn("rofi -show window -modi window", nilfn)
   end, { description = "swap with next client by index", group = "client" }),
 
   awful.key({ modkey, shiftkey }, "n", lain.util.add_tag, _opt("add tag", "tag")),
   awful.key({ modkey, shiftkey }, "e", lain.util.rename_tag, _opt("rename tag", "tag")),
-  awful.key({ modkey, shiftkey }, leftkey, function()
+  awful.key({ modkey, ctrlkey, shiftkey }, "h", function()
     lain.util.move_tag(-1)
   end, _opt("move tag left", "tag")),
-  awful.key({ modkey, shiftkey }, rightkey, function()
+  awful.key({ modkey, ctrlkey, shiftkey }, "l", function()
     lain.util.move_tag(1)
   end, _opt("move tag right", "tag")),
   awful.key({ modkey, shiftkey }, "d", lain.util.delete_tag, _opt("delete tag", "tag")),
@@ -96,6 +111,24 @@ local globalkeys = gears.table.join(
   awful.key({ modkey, ctrlkey }, "k", function()
     awful.screen.focus_relative(-1)
   end, _opt("focus the previous screen", "screen")),
+
+  awful.key({ modkey, shiftkey }, "v", function()
+    local focused = client.focus
+    if not focused then
+      return
+    end
+    local tag = awful.tag.add(next_random_icon(), {
+      screen = client.focus.screen,
+      volatile = true,
+      clients = {
+        client.focus,
+      },
+      layout = awful.layout.layouts[1],
+    })
+    focused:tags({ tag })
+    tag:view_only()
+  end, _opt("move client to a scratch tag", "client")),
+
   --}}}
 
   -- Layout {{{
@@ -134,26 +167,25 @@ local globalkeys = gears.table.join(
 
   -- Program Launchers {{{
   awful.key({ modkey }, returnkey, function()
-    awful.spawn(terminal)
+    awful.spawn.easy_async(terminal, nilfn)
   end, _opt("open a terminal", "launcher")),
+  awful.key({ modkey, shiftkey }, returnkey, function()
+    awful.spawn.easy_async(aux_terminal, nilfn)
+  end, _opt("open the auxiliary terminal", "launcher")),
   awful.key({ modkey }, "b", function()
-    awful.spawn(browser)
+    awful.spawn.easy_async(browser, nilfn)
   end, _opt(browser, "launcher")),
   awful.key({ modkey }, "e", function()
-    awful.util.spawn(filemanager)
+    awful.spawn.easy_async(filemanager, nilfn)
   end, _opt(filemanager, "launcher")),
 
   awful.key({ altkey }, spacekey, function()
-    awful.spawn(
-      string.format(
-        "rofi -show combi",
-        beautiful.bg_normal,
-        beautiful.fg_normal,
-        beautiful.bg_focus,
-        beautiful.fg_focus
-      )
-    )
-  end, _opt("show dmenu", "launcher")),
+    awful.spawn.easy_async("rofi -show combi", nilfn)
+  end, _opt("show rofi", "launcher")),
+
+  awful.key({ altkey }, spacekey, function()
+    awful.spawn.easy_async("rofi -show combi", nilfn)
+  end, _opt("show rofi", "launcher")),
 
   awful.key({ modkey }, "x", function()
     awful.prompt.run({
@@ -169,15 +201,12 @@ local globalkeys = gears.table.join(
   end, _opt("show the menubar", "launcher")),
 
   awful.key({ modkey }, "c", function()
-    awful.spawn.with_shell("rofi -show calc -modi calc -no-show-match -no-sort")
+    awful.spawn.easy_async("rofi -show calc -modi calc -no-show-match -no-sort", nilfn)
   end, { description = "show calculator", group = "launcher" }),
 
   --}}}
 
   -- Session management {{{
-  awful.key({ ctrlkey, altkey }, "l", function()
-    awful.util.spawn("archlinux-logout")
-  end, _opt("lock screen", "system")),
 
   -- awful.key({ modkey }, escK, function()
   --   awful.util.spawn("xkill")
@@ -186,20 +215,19 @@ local globalkeys = gears.table.join(
 
   -- Audio {{{
   awful.key({ modkey }, "v", function()
-    awful.util.spawn("pavucontrol")
+    awful.util.spawn.easy_async("pavucontrol", nilfn)
   end, _opt("pulseaudio control", "system")),
   awful.key({}, "XF86AudioRaiseVolume", function()
     -- os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
     -- beautiful.volume.update()
-    os.execute(string.format("amixer -q set %s 1%%+", "Master"))
-    awesome.emit_signal("widget::volume")
+
+    awesome.emit_signal("widget::volume_osd_slider", 5)
     awesome.emit_signal("module::volume_osd:show", true)
   end),
   awful.key({}, "XF86AudioLowerVolume", function()
     -- os.execute(string.format("amixer -q set %s 1%%-", beautiful.volume.channel))
     -- beautiful.volume.update()
-    os.execute(string.format("amixer -q set %s 1%%-", "Master"))
-    awesome.emit_signal("widget::volume")
+    awesome.emit_signal("widget::volume_osd_slider", -5)
     awesome.emit_signal("module::volume_osd:show", true)
   end),
   awful.key({}, "XF86AudioMute", function()
@@ -213,38 +241,36 @@ local globalkeys = gears.table.join(
     os.execute("amixer -q set Master toggle")
   end),
   awful.key({ ctrlkey, shiftkey }, "m", function()
-    os.execute(string.format("amixer -q set %s 100%%", beautiful.volume.channel))
+    os.execute(string.format("amixer -q set %s 100%%", "Master"))
     beautiful.volume.update()
   end),
   awful.key({ ctrlkey, shiftkey }, "0", function()
-    os.execute(string.format("amixer -q set %s 0%%", beautiful.volume.channel))
+    os.execute(string.format("amixer -q set %s 0%%", "Master"))
     beautiful.volume.update()
   end),
 
   --Media keys supported by mpd.
   awful.key({}, "XF86AudioPlay", function()
-    awful.util.spawn("mpc toggle")
+    awful.util.spawn.easy_async("mpc toggle", nilfn)
   end),
   awful.key({}, "XF86AudioNext", function()
-    awful.util.spawn("mpc next")
+    awful.util.spawn.easy_async("mpc next", nilfn)
   end),
   awful.key({}, "XF86AudioPrev", function()
-    awful.util.spawn("mpc prev")
+    awful.util.spawn.easy_async("mpc prev", nilfn)
   end),
   awful.key({}, "XF86AudioStop", function()
-    awful.util.spawn("mpc stop")
+    awful.util.spawn.easy_async("mpc stop", nilfn)
   end),
   --}}}
 
   -- Brightness{{{
   awful.key({}, "XF86MonBrightnessUp", function()
-    os.execute("brightnessctl -q s +5%")
-    awesome.emit_signal("widget::brightness")
+    awesome.emit_signal("widget::brightness_osd_slider", 5)
     awesome.emit_signal("module::brightness_osd:show", true)
   end, _opt("+10%", "system")),
   awful.key({}, "XF86MonBrightnessDown", function()
-    os.execute("brightnessctl -q s 5%-")
-    awesome.emit_signal("widget::brightness")
+    awesome.emit_signal("widget::brightness_osd_slider", -5)
     awesome.emit_signal("module::brightness_osd:show", true)
   end, _opt("-10%", "system"))
   --}}}
@@ -264,8 +290,44 @@ local clientkeys = gears.table.join(
     c:move_to_screen()
   end, _opt("move to screen", "client")),
 
+  awful.key({ altkey, ctrlkey, shiftkey }, "h", function()
+    local focused = client.focus
+    if not focused then
+      return
+    end
+    local curtag = focused.screen.selected_tag
+    local tags = focused.screen.tags
+    local idx = curtag.index
+    local newtag = tags[gmath.cycle(#tags, idx - 1)]
+    focused:move_to_tag(newtag)
+    awful.tag.viewprev()
+  end, _opt("move client to previous tag", "client")),
+
+  awful.key({ altkey, ctrlkey, shiftkey }, "l", function()
+    local focused = client.focus
+    if not focused then
+      return
+    end
+    local curtag = focused.screen.selected_tag
+    local tags = focused.screen.tags
+    local idx = curtag.index
+    local newtag = tags[gmath.cycle(#tags, idx + 1)]
+    focused:move_to_tag(newtag)
+    awful.tag.viewnext()
+  end, _opt("move client to next tag", "client")),
+
+  awful.key({ altkey }, esckey, function()
+    local c = awful.client.focus.history.list[2]
+    client.focus = c
+    local t = client.focus and client.focus.first_tag or nil
+    if t then
+      t:view_only()
+    end
+    c:raise()
+  end, _opt("go back", "client")),
+
   -- Toggling {{{
-  awful.key({ modkey, ctrlkey }, "t", function(c)
+  awful.key({ modkey }, "t", function(c)
     c.ontop = not c.ontop
   end, _opt("toggle keep on top", "client")),
   awful.key({ modkey }, "n", function(c)
@@ -278,7 +340,7 @@ local clientkeys = gears.table.join(
     -- Focus restored client
     if c then
       c:emit_signal("request::activate", "key.unminimize", { raise = true })
-      -- c:raise()
+      c:raise()
     end
   end, _opt("restore minimized", "client")),
   awful.key({ modkey }, "m", function(c)
@@ -299,26 +361,21 @@ local clientkeys = gears.table.join(
     c.fullscreen = not c.fullscreen
     c:raise()
   end, _opt("toggle fullscreen", "client")),
-  awful.key(
-    { modkey, ctrlkey },
-    "f",
-    awful.client.floating.toggle,
-    _opt("toggle floating", "client")
-  ),
+  awful.key({ modkey }, "f", awful.client.floating.toggle, _opt("toggle floating", "client")),
   awful.key({ modkey, ctrlkey }, "s", function(c)
     c.sticky = not c.sticky
   end, _opt("toggle sticky", "client")),
   --}}}
 
   -- Resize windows {{{
-  awful.key({ modkey, ctrlkey }, "Up", function(c)
+  awful.key({ modkey, ctrlkey }, upkey, function(c)
     if c.floating then
       c:relative_move(0, 0, 0, -10)
     else
       awful.client.incwfact(0.025)
     end
   end, _opt("Floating Resize Vertical -", "client")),
-  awful.key({ modkey, ctrlkey }, "Down", function(c)
+  awful.key({ modkey, ctrlkey }, downkey, function(c)
     if c.floating then
       c:relative_move(0, 0, 0, 10)
     else
@@ -342,10 +399,10 @@ local clientkeys = gears.table.join(
   --}}}
 
   -- Moving floating windows {{{
-  awful.key({ modkey, shiftkey }, "Down", function(c)
+  awful.key({ modkey, shiftkey }, downkey, function(c)
     c:relative_move(0, 10, 0, 0)
   end, _opt("Floating Move Down", "client")),
-  awful.key({ modkey, shiftkey }, "Up", function(c)
+  awful.key({ modkey, shiftkey }, upkey, function(c)
     c:relative_move(0, -10, 0, 0)
   end, _opt("Floating Move Up", "client"))
   -- awful.key({ modkey, shiftkey }, leftkey, function(c)
@@ -421,6 +478,8 @@ local clientbuttons = gears.table.join(
   end)
 )
 --}}}
+
+root.keys(globalkeys)
 
 return {
   globalkeys = globalkeys,

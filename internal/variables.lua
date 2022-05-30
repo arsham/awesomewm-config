@@ -1,5 +1,9 @@
 -- local home = os.getenv("HOME")
 
+local terminal = "kitty"
+local aux_terminal = "alacritty"
+local browser = "firefox"
+
 local vars = {
   -- Keys {{{
   keys = {
@@ -7,6 +11,8 @@ local vars = {
     alt = "Mod1",
     ctrl = "Control",
     shift = "Shift",
+    up = "Up",
+    down = "Down",
     left = "Left",
     right = "Right",
     esc = "Escape",
@@ -17,14 +23,18 @@ local vars = {
   --}}}
   -- Apps {{{
   apps = {
-    terminal = "kitty",
-    filemanager = "pcmanfm",
-    browser = "brave",
+    terminal = "prime-run " .. terminal,
+    aux_terminal = "prime-run " .. aux_terminal,
+    editor = "nvim",
+    editor_cmd = "prime-run " .. terminal .. " -e nvim",
+    filemanager = "prime-run pcmanfm",
+    browser = "prime-run " .. browser,
     shell = "zsh",
   },
   --}}}
   tags = { "➊", "➋", "➌", "➍", "➎", "➏", "➐", "➑", "" },
-  wibox = {
+  extra_tags = { "߷", "☢", "♻", "♼", "✪", "✽", "✿", "⮔", "" },
+  wibar = {
     position = "top",
     height = 55,
   },
