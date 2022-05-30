@@ -152,6 +152,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
         widgets.netspeed(),
         layout = wibox.layout.stack,
       })),
+      widgets.weather(),
       s.mypromptbox,
     },
     tasklist,

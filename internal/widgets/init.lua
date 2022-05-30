@@ -15,6 +15,44 @@ local sign_font = theme.font_name .. "16"
 local widget_font = theme.font_name_mono .. "10"
 --}}}
 
+local function vicious_widget(conf) --{{{
+  local graph = wibox.widget.graph({
+    align = "center",
+    valign = "center",
+  })
+  graph:set_width(150)
+  graph:set_background_color(conf.bg)
+  graph:set_scale(conf.scale or false)
+  graph:set_color({
+    type = "linear",
+    from = conf.from or { 0, 0 },
+    to = conf.to,
+    stops = conf.stops,
+  })
+  awful.tooltip({
+    objects = { graph },
+    text = conf.tooltip or "Usage",
+  })
+  vicious.register(graph, conf.widget, conf.format, conf.delay or 0.4)
+  if conf.label_md then
+    local label = wibox.widget({
+      markup = conf.label_md,
+      widget = wibox.widget.textbox,
+      align = "center",
+      valign = "center",
+    })
+    return wibox.widget({
+      graph,
+      wibox.container.margin(label, 0, conf.margin or dpi(10)),
+      layout = wibox.layout.stack,
+      horizontal_offset = 15,
+    })
+  end
+
+  return graph
+end
+--}}}
+
 local function go_widget(conf) --{{{
   local graph = wibox.widget.graph({
     align = "center",
@@ -198,6 +236,26 @@ local function netspeed() --{{{
 end
 --}}}
 
+local function weather() --{{{
+  local w = wibox.widget.textbox()
+  gears.timer({
+    timeout = 1800,
+    call_now = true,
+    autostart = true,
+    callback = function()
+      awful.spawn.easy_async_with_shell([[curl -s 'wttr.in?format=%c+%t']], function(line)
+        for emoji, temp in string.gmatch(line, "([^ ]+)[^+]+( .+)") do
+          w.markup = markup.fontfg(theme.font_emoji .. "10", theme.fg_normal, emoji)
+            .. markup.fontfg(theme.font_name_mono .. "Bold 10", widget_color, temp)
+          return
+        end
+      end)
+    end,
+  })
+  return w
+end
+--}}}
+
 return {
   cpuwidget = cpuwidget,
   thermal_cpu = thermalwidget_cpu,
@@ -206,6 +264,7 @@ return {
   fanwidget = fanwidget,
   netgraph = get_net_graph,
   netspeed = netspeed,
+  weather = weather,
 }
 
 -- vim: fdm=marker fdl=0
