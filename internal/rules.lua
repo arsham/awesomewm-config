@@ -65,10 +65,10 @@ ruled.client.connect_signal("request::rules", function()
         "Unetbootin.elf",
         "Wpa_gui",
         "Xfce4-terminal",
-        "archlinux-logout",
         "pinentry",
         "veromix",
         "xtightvncviewer",
+        "Gnome-screenshot",
       },
 
       -- Note that the name property shown in xprop might be set slightly after creation of the client
@@ -86,6 +86,42 @@ ruled.client.connect_signal("request::rules", function()
     },
     properties = { floating = true },
   }) --}}}
+
+  -- Floating On Top {{{
+  ruled.client.append_rule({
+    id = "floating_on_top",
+    rule_any = {
+      instance = {
+        "file_progress",
+        "Popup",
+        "nm-connection-editor",
+      },
+      class = {
+        "scrcpy",
+        "Mugshot",
+        "Pulseeffects",
+        "Gcolor2",
+      },
+      role = {
+        "AlarmWindow",
+        "ConfigManager",
+        "pop-up",
+      },
+      name = {
+        "Picture-in-Picture",
+      },
+    },
+    properties = {
+      skip_decoration = true,
+      ontop = true,
+      floating = true,
+      focus = awful.client.focus.filter,
+      raise = true,
+      keys = keys.clientkeys,
+      buttons = keys.clientbuttons,
+      placement = awful.placement.centered,
+    },
+  }) -- }}}
 
   -- Rounded corners {{{
   ruled.client.append_rule({
@@ -174,6 +210,7 @@ ruled.client.connect_signal("request::rules", function()
         "UXTerm",
         "kitty",
         "K3rmit",
+        "alacritty",
       },
     },
     properties = {
@@ -303,17 +340,17 @@ ruled.client.connect_signal("request::rules", function()
   --- Slack {{{
   ruled.client.append_rule({
     id = "slack",
-    rule = { class = "[sS]lack" },
+    rule = { class = "Slack" },
     properties = { tag = awful.screen.focused().tags[9] },
   })
 
   ruled.client.append_rule({
     id = "floating_slack",
     rule = {
-      class = "[sS]lack",
-      except = {
-        "NORMAL",
-      },
+      class = "Slack",
+    },
+    except = {
+      type = "normal",
     },
     properties = {
       skip_decoration = true,
@@ -345,21 +382,11 @@ ruled.client.connect_signal("request::rules", function()
     },
   }) --}}}
 
-  -- Floating {{{
+  -- Disabled {{{
   ruled.client.append_rule({
-    id = "floating",
+    id = "disabled",
     rule_any = {
-      instance = {
-        "file_progress",
-        "Popup",
-        "nm-connection-editor",
-      },
-      class = {
-        "scrcpy",
-        "Mugshot",
-        "Pulseeffects",
-      },
-      role = {
+      type = {
         "AlarmWindow",
         "ConfigManager",
         "pop-up",
@@ -373,6 +400,25 @@ ruled.client.connect_signal("request::rules", function()
       raise = true,
       keys = keys.clientkeys,
       buttons = keys.clientbuttons,
+      placement = awful.placement.centered,
+    },
+  }) --}}}
+
+  -- Fullscreen {{{
+  ruled.client.append_rule({
+    id = "fullscreen",
+    rule_any = {
+      class = {
+        "archlinux-logout",
+      },
+    },
+    properties = {
+      fullscreen = true,
+      titlebars_enabled = false,
+      round_corners = false,
+      floating = true,
+      above = true,
+      skip_decoration = true,
       placement = awful.placement.centered,
     },
   }) --}}}
