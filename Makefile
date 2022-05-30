@@ -9,3 +9,7 @@ update:
 .PHONY: test
 test:
 	@scripts/test.sh
+
+.PHINY: restart
+restart:
+	@scripts/restart.sh
