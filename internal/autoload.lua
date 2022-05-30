@@ -12,6 +12,7 @@ local function run_once(item)
         preset = naughty.config.presets.warning,
         title = "Killed " .. name,
         text = err,
+        timeout = 4,
       })
     end
   end
@@ -30,20 +31,23 @@ local function run_once(item)
           preset = naughty.config.presets.critical,
           title = "Starting " .. cmd_str,
           text = "Error: " .. err,
+          timeout = 4,
         })
       end
     end)
     return
   end
 
-  local _, err = awful.spawn.with_shell(cmd_str .. cmd)
-  if err and err ~= "" then
-    naughty.notify({
-      preset = naughty.config.presets.critical,
-      title = "Starting " .. cmd_str,
-      text = "Error: " .. err,
-    })
-  end
+  awful.spawn.easy_async_with_shell(cmd_str .. cmd, function(_, err)
+    if err and err ~= "" then
+      naughty.notify({
+        preset = naughty.config.presets.critical,
+        title = "Starting " .. cmd_str,
+        text = "Error: " .. err,
+        timeout = 4,
+      })
+    end
+  end)
 end
 
 -- run xrandr --output VGA-1 --primary --mode 1360x768 --pos 0x0 --rotate normal
