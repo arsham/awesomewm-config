@@ -158,6 +158,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     tasklist,
     {
       layout = wibox.layout.fixed.horizontal,
+      with_margin(require("internal.widgets.testwidget")),
       with_margin(widgets.thermal_cpu()),
       with_margin(widgets.cpuwidget()),
       with_margin(widgets.fanwidget()),
