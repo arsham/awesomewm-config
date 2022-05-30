@@ -46,6 +46,17 @@ func main() {
 		}()
 	}
 
+	battery, err := newBattery(ctx)
+	if err != nil {
+		logger.Error(err)
+		return
+	}
+	go func() {
+		for b := range battery {
+			cmdCh <- fmt.Sprintf(`client.emit_signal("go::battery:value", %q, %q)`, b.msg, b.icon)
+		}
+	}()
+
 	var lastDropboxMsg, lastDropboxIcon string
 	dropboxFunc := func() {
 		ctx, cancel := context.WithTimeout(ctx, time.Second)
