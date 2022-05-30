@@ -111,6 +111,20 @@ func main() {
 		}
 	}
 
+	lastNet := &netValue{}
+	netFunc := func() {
+		value, err := network()
+		if err != nil {
+			return
+		}
+		if value.upString != lastNet.upString || value.downString != lastNet.downString {
+			cmdCh <- fmt.Sprintf(`client.emit_signal("go::network:value", %q, %q, %d, %d)`,
+				value.upString, value.downString, int(value.upValue), int(value.downValue))
+			lastNet = value
+		}
+	}
+
+	funcs := []func(){cpuFunc, dropboxFunc, memFunc, netFunc}
 
 	for _, fn := range funcs {
 		go func(fn func()) {
