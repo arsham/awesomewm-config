@@ -46,6 +46,16 @@ func main() {
 		}()
 	}
 
+	cpuFunc := func() {
+		err := m.prepareCPU()
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+		cmdCh <- fmt.Sprintf(`client.emit_signal("go::cpu:temp", %d)`, m.cpuTemp())
+		cmdCh <- fmt.Sprintf(`client.emit_signal("go::cpu:fan", %d)`, m.cpuFan())
+	}
+
 	battery, err := newBattery(ctx)
 	if err != nil {
 		logger.Error(err)
@@ -73,7 +83,7 @@ func main() {
 		}
 	}
 
-	funcs := []func(){dropboxFunc}
+	funcs := []func(){cpuFunc, dropboxFunc}
 
 	for _, fn := range funcs {
 		go func(fn func()) {
