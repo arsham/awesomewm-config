@@ -95,7 +95,22 @@ func main() {
 		}
 	}
 
-	funcs := []func(){cpuFunc, dropboxFunc}
+	var lastMem, lastSwap string
+	memFunc := func() {
+		mem, swap, err := memory()
+		if err != nil {
+			return
+		}
+		if mem != lastMem {
+			cmdCh <- fmt.Sprintf(`client.emit_signal("go::memory:mem", %q)`, mem)
+			lastMem = mem
+		}
+		if swap != lastSwap {
+			cmdCh <- fmt.Sprintf(`client.emit_signal("go::memory:swap", %q)`, swap)
+			lastSwap = swap
+		}
+	}
+
 
 	for _, fn := range funcs {
 		go func(fn func()) {
