@@ -138,12 +138,6 @@ awful.screen.connect_for_each_screen(function(s)
       height = vars.wibar.height,
     })
 
-  local battery_widget = require("awesome-wm-widgets.batteryarc-widget.batteryarc")({
-    font = "Play Bold 7",
-    show_current_level = true,
-    arc_thickness = 2,
-    size = 35,
-  })
 
   -- Add widgets to the wibox {{{
   s.mywibox:setup({
@@ -163,8 +157,8 @@ awful.screen.connect_for_each_screen(function(s)
       wibox.container.margin(arsham.cpuwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
       wibox.container.margin(arsham.fanwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
       wibox.container.margin(arsham.memwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
-      wibox.container.margin(battery_widget, dpi(4), dpi(8), dpi(4), dpi(4)),
       require("internal.widgets.dropbox"),
+      require("internal.widgets.battery"),
       wibox.widget.systray(),
       textclock(),
       s.mylayoutbox,
