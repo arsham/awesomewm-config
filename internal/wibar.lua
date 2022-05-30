@@ -155,11 +155,11 @@ awful.screen.connect_for_each_screen(function(s)
     tasklist, -- Middle widget
     { -- Right widgets
       layout = wibox.layout.fixed.horizontal,
-      wibox.container.margin(arsham.memwidget, dpi(4), dpi(8), dpi(4), dpi(4)),
       with_margin(widgets.thermal_cpu()),
       with_margin(widgets.cpuwidget()),
       with_margin(widgets.fanwidget()),
       with_margin(widgets.thermal_gpu()),
+      with_margin(widgets.memwidget()),
       require("internal.widgets.dropbox"),
       require("internal.widgets.battery"),
       wibox.widget.systray(),

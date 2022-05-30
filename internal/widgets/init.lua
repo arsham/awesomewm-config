@@ -121,11 +121,33 @@ local function thermalwidget_gpu()
   return generic_thermal("go::gpu:temp")
 end
 
+local function memwidget() --{{{
+  local widget = wibox.widget.textbox()
+  local w = wibox.widget({
+    wibox.container.margin(
+      wibox.widget.textbox(markup.fontfg(theme.font_name .. "17", sign_colour, "")),
+      dpi(4),
+      dpi(8),
+      dpi(4),
+      dpi(4)
+    ),
+    widget,
+    aliagn = "center",
+    valiagn = "center",
+    layout = wibox.layout.fixed.horizontal,
+  })
+  client.connect_signal("go::memory:mem", function(value)
+    widget.markup = markup.fontfg(theme.font_name .. "10", widget_color, value)
+  end)
+  return w
+end --}}}
+
 
 return {
   cpuwidget = cpuwidget,
   thermal_cpu = thermalwidget_cpu,
   thermal_gpu = thermalwidget_gpu,
+  memwidget = memwidget,
   fanwidget = fanwidget,
 }
 
