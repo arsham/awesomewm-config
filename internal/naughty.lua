@@ -18,14 +18,8 @@ end) --}}}
 
 naughty.connect_signal("request::display", function(n)
   n.title = string.format("<span font = 'Noto Sans 16'>%s</span>", n.title)
-  -- n.message = string.format("<i>%s</i>", n.message)
   naughty.layout.box({ notification = n })
 end)
-
--- naughty.connect_signal("request::display", function(n)
---   n.title = string.format("<span font = 'Noto Sans 16'>%s</span>", n.title)
---   n.message = string.format("<i>%s</i>", n.message)
--- end)
 
 -- local cst = require("naughty.constants")
 local cst = require("naughty.constants") --{{{
@@ -56,19 +50,6 @@ naughty.connect_signal("destroyed", function(n, reason)
     end
   end
   -- end
-end) --}}}
-
-naughty.connect_signal("destroyed::arsham_disabled_this", function(n, reason) --{{{
-  if not n.clients then
-    return
-  end
-
-  if reason == cst.notification_closed_reason.dismissed_by_user then
-    for _, c in ipairs(n.clients) do
-      c.urgent = true
-    end
-    return
-  end
 end) --}}}
 
 -- Store notifications to the file
