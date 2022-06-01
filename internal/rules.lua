@@ -1,4 +1,5 @@
 local keys = require("internal.keybindings")
+local placement = require("internal.lib.placement")
 local awful = require("awful")
 local ruled = require("ruled")
 require("awful.autofocus")
@@ -44,6 +45,7 @@ ruled.client.connect_signal("request::rules", function()
         "DTA", -- Firefox addon DownThemAll.
         "copyq", -- Includes session name in class.
         "pinentry",
+        "Devtools", -- Firefox devtools
       },
       class = {
         "Arandr",
@@ -82,9 +84,14 @@ ruled.client.connect_signal("request::rules", function()
         "pop-up", -- e.g. Google Chrome's (detached) Developer Tools.
         "Preferences",
         "setup",
+        "GtkFileChooserDialog",
+        "conversation",
+      },
+      type = {
+        "dialog",
       },
     },
-    properties = { floating = true },
+    properties = { floating = true, placement = placement.centered },
   }) --}}}
 
   -- Floating On Top {{{
@@ -152,7 +159,7 @@ ruled.client.connect_signal("request::rules", function()
       floating = true,
       above = true,
       skip_decoration = true,
-      placement = awful.placement.centered,
+      placement = placement.centered,
     },
   }) --}}}
 
@@ -166,7 +173,7 @@ ruled.client.connect_signal("request::rules", function()
       floating = true,
       above = true,
       skip_decoration = true,
-      placement = awful.placement.centered,
+      placement = placement.centered,
     },
   }) --}}}
 
