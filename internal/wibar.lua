@@ -6,7 +6,7 @@ require("awful.autofocus")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local lain = require("lain")
-local widgets = require("internal.widgets")
+local widgets = require("widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
 local vars = require("internal.variables")
@@ -160,14 +160,14 @@ screen.connect_signal("request::desktop_decoration", function(s)
     tasklist,
     {
       layout = wibox.layout.fixed.horizontal,
-      with_margin(require("internal.widgets.testwidget")),
+      with_margin(require("widgets.testwidget")),
       with_margin(widgets.thermal_cpu()),
       with_margin(widgets.cpuwidget()),
       with_margin(widgets.fanwidget()),
       with_margin(widgets.thermal_gpu()),
       with_margin(widgets.memwidget()),
-      require("internal.widgets.dropbox"),
-      require("internal.widgets.battery"),
+      require("widgets.dropbox"),
+      require("widgets.battery"),
       wibox.widget.systray(),
       textclock(),
       mylayoutbox,
