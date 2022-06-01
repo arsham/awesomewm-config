@@ -9,7 +9,7 @@ local lain = require("lain")
 local widgets = require("widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
-local vars = require("internal.variables")
+local vars = require("config.variables")
 local hider = require("lib.outside_click_hides")
 
 naughty.config.defaults["icon_size"] = vars.theme.icon_size
@@ -131,6 +131,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     screen = s,
     filter = awful.widget.tasklist.filter.currenttags,
     buttons = tasklist_buttons,
+    forced_height = 7,
   }) --}}}
 
   mywibox = awful.wibar({

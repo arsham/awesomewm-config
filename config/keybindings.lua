@@ -1,6 +1,6 @@
 -- vim: fdm=marker fdl=1
 -- Imports {{{2
-local vars = require("internal.variables")
+local vars = require("config.variables")
 
 local terminal = vars.apps.terminal
 local aux_terminal = vars.apps.aux_terminal

@@ -1,4 +1,4 @@
-local keys = require("internal.keybindings")
+local keys = require("config.keybindings")
 local placement = require("lib.placement")
 local awful = require("awful")
 local ruled = require("ruled")

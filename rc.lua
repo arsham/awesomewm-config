@@ -7,7 +7,7 @@ require("awful.autofocus")
 require("awful.hotkeys_popup.keys")
 local menubar = require("menubar")
 local naughty = require("naughty")
-local vars = require("internal.variables")
+local vars = require("config.variables")
 local terminal = vars.apps.terminal
 awful.util.terminal = terminal
 menubar.utils.terminal = terminal
@@ -52,14 +52,15 @@ end
 -- }}}
 
 require("theme.theme")
-require("internal.menu")
-require("internal.layouts")
-require("internal.wibar")
-require("internal.keybindings")
-require("internal.rules")
-require("internal.signals")
+require("config.menu")
+require("config.layouts")
+require("config.wibar")
+require("config.keybindings")
+require("config.rules")
+require("config.signals")
 require("widgets.osd")
-require("internal.autoload")
+require("config.autoload")
+require("config.naughty")
 
 collectgarbage()
 collectgarbage("setpause", 110)

@@ -21,7 +21,6 @@ naughty.connect_signal("request::display", function(n)
   naughty.layout.box({ notification = n })
 end)
 
--- local cst = require("naughty.constants")
 local cst = require("naughty.constants") --{{{
 naughty.connect_signal("destroyed", function(n, reason)
   if not n.clients then
@@ -34,29 +33,13 @@ naughty.connect_signal("destroyed", function(n, reason)
     end
     return
   end
-  -- local jumped = false
+
   for _, c in ipairs(n.clients) do
     if c.class == "Slack" then
       c.urgent = true
-      -- if jumped then
-      --   c:activate({
-      --     context = "client.jumpto",
-      --     raise = true,
-      --   })
-      -- else
-      --   c:jump_to()
-      --   jumped = true
-      -- end
     end
   end
   -- end
 end) --}}}
-
--- Store notifications to the file
--- client.connect_signal("added", function(n)
---   local file = io.open(os.getenv("HOME") .. "/.config/awesome/tmp/naughty_history", "a")
---   file:write(n.title .. ": " .. n.message .. "\n")
---   file:close()
--- end)
 
 -- vim: fdm=marker fdl=0
