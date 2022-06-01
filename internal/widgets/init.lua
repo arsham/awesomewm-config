@@ -68,7 +68,7 @@ local function go_widget(conf) --{{{
     to = conf.to,
     stops = conf.stops,
   })
-  awful.tooltip({
+  local tooltip = awful.tooltip({
     objects = { graph },
     text = conf.tooltip or "Usage",
   })
@@ -89,10 +89,10 @@ local function go_widget(conf) --{{{
     function w:add_value(v)
       graph:add_value(v)
     end
-    return w
+    return w, tooltip
   end
 
-  return graph
+  return graph, tooltip
 end
 --}}}
 
@@ -113,7 +113,7 @@ local function cpuwidget() --{{{
 end --}}}
 
 local function fanwidget() --{{{
-  local widget = go_widget({
+  local widget, tooltip = go_widget({
     bg = "#232627",
     label_md = markup.fontfg(theme.font_name .. "15", "#1D99F399", ""),
     to = { 0, 35 },
@@ -127,13 +127,14 @@ local function fanwidget() --{{{
 
   client.connect_signal("go::cpu:fan", function(value)
     widget:add_value(value)
+    tooltip.text = "Current: " .. tostring(value)
   end)
 
   return widget
 end --}}}
 
 local function generic_thermal(signal) --{{{
-  local widget = go_widget({
+  local widget, tooltip = go_widget({
     bg = "#232627",
     label_md = markup.fontfg(theme.font_name .. "15", "#D8411D99", ""),
     to = { 0, 35 },
@@ -146,6 +147,7 @@ local function generic_thermal(signal) --{{{
   })
   client.connect_signal(signal, function(value)
     widget:add_value(value)
+    tooltip.text = "Current: " .. tostring(value)
   end)
 
   return widget
@@ -184,7 +186,7 @@ local function get_net_graph() --{{{
   local down_graph = go_widget({
     bg = "#232627",
     scale = true,
-    width = 250,
+    width = 220,
     to = { 0, 55 },
     stops = {
       { 0.5, "#948809" },
