@@ -58,7 +58,7 @@ require("internal.wibar")
 require("internal.keybindings")
 require("internal.rules")
 require("internal.signals")
-require("internal.osd")
+require("widgets.osd")
 require("internal.autoload")
 
 collectgarbage()

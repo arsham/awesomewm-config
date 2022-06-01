@@ -1,5 +1,5 @@
 local awful = require("awful")
-local widget = require("internal.osd.widget")
+local widget = require("widgets.osd.widget")
 
 widget({
   id = "volume_osd",
