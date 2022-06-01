@@ -8,6 +8,8 @@ ExecStart=/home/arsham/go/bin/awesome-sensors
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
+RestartSec=5s
+StartLimitInterval=0
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical.target
