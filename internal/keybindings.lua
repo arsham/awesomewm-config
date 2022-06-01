@@ -67,7 +67,7 @@ local globalkeys = gears.table.join(
   -- awful.key({ modkey, shiftkey }, tabkey, awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ modkey }, tabkey, function()
     awful.spawn("rofi -show window -modi window", nilfn)
-  end, { description = "swap with next client by index", group = "client" }),
+  end, { description = "cycle through all clients", group = "client" }),
 
   awful.key({ modkey, shiftkey }, "n", lain.util.add_tag, _opt("add tag", "tag")),
   awful.key({ modkey, shiftkey }, "e", lain.util.rename_tag, _opt("rename tag", "tag")),
@@ -215,29 +215,17 @@ local globalkeys = gears.table.join(
 
   -- Audio {{{
   awful.key({ modkey }, "v", function()
-    awful.util.spawn.easy_async("pavucontrol", nilfn)
+    awful.spawn.easy_async("pavucontrol", nilfn)
   end, _opt("pulseaudio control", "system")),
   awful.key({}, "XF86AudioRaiseVolume", function()
-    -- os.execute(string.format("amixer -q set %s 1%%+", beautiful.volume.channel))
-    -- beautiful.volume.update()
-
     awesome.emit_signal("widget::volume_osd_slider", 5)
     awesome.emit_signal("module::volume_osd:show", true)
   end),
   awful.key({}, "XF86AudioLowerVolume", function()
-    -- os.execute(string.format("amixer -q set %s 1%%-", beautiful.volume.channel))
-    -- beautiful.volume.update()
     awesome.emit_signal("widget::volume_osd_slider", -5)
     awesome.emit_signal("module::volume_osd:show", true)
   end),
   awful.key({}, "XF86AudioMute", function()
-    -- os.execute(
-    --   string.format(
-    --     "amixer -q set %s toggle",
-    --     beautiful.volume.togglechannel or beautiful.volume.channel
-    --   )
-    -- )
-    -- beautiful.volume.update()
     os.execute("amixer -q set Master toggle")
   end),
   awful.key({ ctrlkey, shiftkey }, "m", function()
@@ -251,16 +239,16 @@ local globalkeys = gears.table.join(
 
   --Media keys supported by mpd.
   awful.key({}, "XF86AudioPlay", function()
-    awful.util.spawn.easy_async("mpc toggle", nilfn)
+    awful.spawn.easy_async("mpc toggle", nilfn)
   end),
   awful.key({}, "XF86AudioNext", function()
-    awful.util.spawn.easy_async("mpc next", nilfn)
+    awful.spawn.easy_async("mpc next", nilfn)
   end),
   awful.key({}, "XF86AudioPrev", function()
-    awful.util.spawn.easy_async("mpc prev", nilfn)
+    awful.spawn.easy_async("mpc prev", nilfn)
   end),
   awful.key({}, "XF86AudioStop", function()
-    awful.util.spawn.easy_async("mpc stop", nilfn)
+    awful.spawn.easy_async("mpc stop", nilfn)
   end),
   --}}}
 
