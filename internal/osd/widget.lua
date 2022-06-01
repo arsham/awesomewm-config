@@ -49,9 +49,6 @@ function osd:place_top_right() --{{{
     },
     honor_workarea = true,
   })
-  -- overlay:connect_signal("request::manage", function(c)
-  --   require("internal.lib.debug").dump_to(nil, c)
-  -- end)
 end --}}}
 
 function osd:keep_ticking() --{{{
