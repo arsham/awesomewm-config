@@ -10,7 +10,7 @@ local widgets = require("internal.widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
 local vars = require("internal.variables")
-local hider = require("internal.lib.outside_click_hides")
+local hider = require("lib.outside_click_hides")
 
 naughty.config.defaults["icon_size"] = vars.theme.icon_size
 

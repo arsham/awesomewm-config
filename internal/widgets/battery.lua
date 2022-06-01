@@ -2,7 +2,7 @@ local wibox = require("wibox")
 local awful = require("awful")
 local gears = require("gears")
 local beautiful = require("beautiful")
-local hider = require("internal.lib.outside_click_hides")
+local hider = require("lib.outside_click_hides")
 local theme = require("theme.theme")
 
 function round(num, numDecimalPlaces)

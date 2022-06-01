@@ -31,7 +31,7 @@ local osd = {}
 function osd.new(conf) --{{{
   assert(conf, "You need to pass a config table!")
   assert(conf.id, "You need to pass a widget id!")
-  config = require("internal.lib.table").tbl_extend(defaults, conf)
+  config = require("lib.table").tbl_extend(defaults, conf)
   osd.config = config
   osd:create_widget()
   return osd
@@ -308,7 +308,7 @@ return setmetatable({}, { --{{{
   __call = function(_, conf)
     assert(conf, "You need to pass a config table!")
     assert(conf.id, "You need to pass a widget id!")
-    config = require("internal.lib.table").tbl_extend(defaults, conf)
+    config = require("lib.table").tbl_extend(defaults, conf)
     t = {
       config = config,
     }

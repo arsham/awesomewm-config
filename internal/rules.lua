@@ -1,5 +1,5 @@
 local keys = require("internal.keybindings")
-local placement = require("internal.lib.placement")
+local placement = require("lib.placement")
 local awful = require("awful")
 local ruled = require("ruled")
 require("awful.autofocus")

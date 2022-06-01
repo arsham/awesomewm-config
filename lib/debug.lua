@@ -30,7 +30,7 @@ end
 
 local function dump_to(file, ...)
   file = file or "/home/arsham/tmp/log.txt"
-  file = io.open(file, "w+")
+  file = io.open(file, "a+")
   local ret = {}
   for _, v in ipairs({ ... }) do
     table.insert(ret, _dump(v))

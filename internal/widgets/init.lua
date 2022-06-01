@@ -7,7 +7,7 @@ local markup = lain.util.markup
 local dpi = require("beautiful.xresources").apply_dpi
 local gears = require("gears")
 local awful = require("awful")
-local fmt = require("internal.lib.fmt")
+local fmt = require("lib.fmt")
 
 local sign_colour = "#43A04799"
 local widget_color = "#3D75C6CC"

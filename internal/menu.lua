@@ -35,7 +35,7 @@ awful.util.mymainmenu = freedesktop.menu.build({
   },
 })
 
-local hider = require("internal.lib.outside_click_hides")
+local hider = require("lib.outside_click_hides")
 hider.menu(awful.util.mymainmenu, nil, true)
 
 -- }}}
