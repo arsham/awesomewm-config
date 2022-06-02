@@ -1,3 +1,5 @@
+-- awesome_mode: api-level=4:screen=on
+
 pcall(require, "luarocks.loader")
 local awful = require("awful")
 require("awful.autofocus")
@@ -13,10 +15,10 @@ awful.util.shell = vars.apps.shell
 -- Error handling {{{
 -- Handle runtime errors during startup.
 if awesome.startup_errors then
-  naughty.notify({
+  naughty.notification({
     preset = naughty.config.presets.critical,
     title = "Startup encountered a problem",
-    text = awesome.startup_errors,
+    message = awesome.startup_errors,
   })
 end
 
@@ -25,6 +27,16 @@ naughty.connect_signal("request::display_error", function(message, startup)
     urgency = "critical",
     title = "Oops, an error happened" .. (startup and " during startup!" or "!"),
     message = message,
+  })
+end)
+
+local dump_str = require("lib.debug").dump_str
+awesome.connect_signal("debug::deprecation", function(hint, see, args)
+  naughty.notification({
+    urgency = "low",
+    title = "Deprecated",
+    message = string.format("%s\n%s\n%s", hint, see, dump_str(args)),
+    timeout = 10,
   })
 end)
 
@@ -37,10 +49,10 @@ do
     end
     in_error = true
 
-    naughty.notify({
+    naughty.notification({
       preset = naughty.config.presets.critical,
       title = "Error",
-      text = tostring(err),
+      message = tostring(err),
     })
     in_error = false
   end)

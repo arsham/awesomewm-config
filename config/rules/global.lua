@@ -10,7 +10,7 @@ ruled.client.append_rule({
   properties = {
     above = false,
     below = false,
-    border_color = beautiful.border_normal,
+    border_color = beautiful.border_color_normal,
     border_width = beautiful.border_width,
     buttons = keys.clientbuttons,
     floating = false,

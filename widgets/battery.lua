@@ -110,7 +110,7 @@ local function setup_menu_item(item) --{{{
   --}}}
 
   -- Mouse click handler{{{
-  row:buttons(awful.util.table.join(awful.button({}, 1, function()
+  row:buttons(gears.table.join(awful.button({}, 1, function()
     popup.visible = not popup.visible
     awful.spawn.with_shell(item.command)
   end)))
@@ -127,7 +127,7 @@ popup:setup(rows)
 hider.popup(popup, nil, true)
 
 -- Mouse click handler{{{
-battery_widget:buttons(awful.util.table.join(awful.button({}, 1, function()
+battery_widget:buttons(gears.table.join(awful.button({}, 1, function()
   if popup.visible then
     popup.visible = not popup.visible
   else

@@ -51,15 +51,13 @@ local theme = {
   --}}}
   -- Border {{{
   border_width = dpi(2), -- The fallback border width when nothing else is set
-  border_normal = "#3F3F3F",
-  border_focus = "#245C85",
+  border_color_normal = "#3F3F3F",
+  border_color_active = "#245C85",
   border_marked = "#CC9393",
   border_color_marked = nil, -- The border color when the client is marked
   border_color_floating = nil, -- The fallback border color when the client is floating
   border_color_maximized = nil, -- The fallback border color when the client is maximized
   border_color_fullscreen = nil, -- The fallback border color when the client is fullscreen
-  border_color_active = nil, -- The border color when the client is active
-  border_color_normal = nil, -- The border color when the client is not active
   border_color_urgent = nil, -- The border color when the client has the urgent property set
   border_color_new = nil, -- The border color when the client is not active and new
   border_color_floating_active = nil, -- The border color when the (floating) client is active

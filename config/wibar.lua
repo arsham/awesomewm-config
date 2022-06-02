@@ -74,12 +74,23 @@ local tasklist_buttons = gears.table.join(
 
 local function set_wallpaper(s) --{{{
   if beautiful.wallpaper then
-    local wallpaper = beautiful.wallpaper
-    -- If wallpaper is a function, call it with the screen
-    if type(wallpaper) == "function" then
-      wallpaper = wallpaper(s)
-    end
-    gears.wallpaper.maximized(wallpaper, s, true)
+    awful.wallpaper({
+      screen = s,
+      widget = {
+        {
+          image = beautiful.wallpaper,
+          upscale = true,
+          downscale = true,
+          horizontal_fit_policy = "fit",
+          vertical_fit_policy = "auto",
+          widget = wibox.widget.imagebox,
+        },
+        valign = "center",
+        halign = "center",
+        tiled = false,
+        widget = wibox.container.tile,
+      },
+    })
   end
 end --}}}
 
@@ -102,7 +113,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
   -- Layout indicator icon {{{
   -- which will contain an icon indicating which layout we're using. We need
   -- one layoutbox per screen.
-  mylayoutbox = awful.widget.layoutbox(s)
+  mylayoutbox = awful.widget.layoutbox({ screen = s })
   mylayoutbox:buttons(gears.table.join(
     awful.button({}, 1, function()
       awful.layout.inc(1)
@@ -133,7 +144,7 @@ screen.connect_signal("request::desktop_decoration", function(s)
     forced_height = 7,
   }) --}}}
 
-  mywibox = awful.wibar({
+  local mywibox = awful.wibar({
     position = vars.wibar.position,
     screen = s,
     height = vars.wibar.height,

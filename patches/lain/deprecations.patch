@@ -1,0 +1,36 @@
+diff --git a/widget/cal.lua b/widget/cal.lua
+index 7543684..944965b 100644
+--- a/widget/cal.lua
++++ b/widget/cal.lua
+@@ -18,6 +18,7 @@ local type     = type
+ local tonumber = tonumber
+ local tostring = tostring
+ local utf8     = utf8
++local gears    = require("gears")
+ 
+ -- Calendar notification
+ -- lain.widget.cal
+@@ -153,12 +154,12 @@ local function factory(args)
+             return
+         end
+ 
+-        cal.notification = naughty.notify {
++        cal.notification = naughty.notification {
+             preset  = cal.notification_preset,
+             screen  = cal.followtag and awful.screen.focused() or scr or 1,
+             icon    = cal.icon,
+             timeout = type(seconds) == "number" and seconds or cal.notification_preset.timeout or 5,
+-            text    = text
++            message = text
+         }
+     end
+ 
+@@ -174,7 +175,7 @@ local function factory(args)
+     function cal.attach(widget)
+         widget:connect_signal("mouse::enter", cal.hover_on)
+         widget:connect_signal("mouse::leave", cal.hide)
+-        widget:buttons(awful.util.table.join(
++        widget:buttons(gears.table.join(
+                     awful.button({}, 1, cal.prev),
+                     awful.button({}, 3, cal.next),
+                     awful.button({}, 2, cal.hover_on),

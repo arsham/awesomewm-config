@@ -20,7 +20,6 @@ local function vicious_widget(conf) --{{{
     align = "center",
     valign = "center",
   })
-  graph:set_width(150)
   graph:set_background_color(conf.bg)
   graph:set_scale(conf.scale or false)
   graph:set_color({
@@ -49,7 +48,12 @@ local function vicious_widget(conf) --{{{
     })
   end
 
-  return graph
+  local constraint = wibox.container.constraint(graph)
+  constraint:set_width(150)
+  function constraint:add_value(...)
+    graph:add_value(...)
+  end
+  return constraint
 end
 --}}}
 
@@ -59,7 +63,6 @@ local function go_widget(conf) --{{{
     valign = "center",
   })
   graph:set_max_value(100)
-  graph:set_width(conf.width or 150)
   graph:set_background_color(conf.bg)
   graph:set_scale(conf.scale or false)
   graph:set_color({
@@ -92,7 +95,12 @@ local function go_widget(conf) --{{{
     return w, tooltip
   end
 
-  return graph, tooltip
+  local constraint = wibox.container.constraint(graph)
+  constraint:set_width(conf.width or 150)
+  function constraint:add_value(...)
+    graph:add_value(...)
+  end
+  return constraint, tooltip
 end
 --}}}
 

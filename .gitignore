@@ -52,3 +52,4 @@ menubar/
 naughty/
 ruled/
 wibox/
+!patches/*
