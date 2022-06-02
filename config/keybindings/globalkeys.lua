@@ -17,7 +17,7 @@ local returnkey = vars.keys.ret
 local spacekey = vars.keys.space
 local tabkey = vars.keys.tab
 
-local gears = require("gears")
+local gmath = require("gears.math")
 local awful = require("awful")
 local beautiful = require("beautiful")
 local menubar = require("menubar")
@@ -52,16 +52,10 @@ awful.keyboard.append_global_keybindings({
 
   -- Tags {{{
   awful.key({ modkey }, esckey, awful.tag.history.restore, _opt("go back", "tag")),
-  awful.key({ modkey }, "h", awful.tag.viewprev, _opt("view previous", "tag")),
-  awful.key({ modkey }, "l", awful.tag.viewnext, _opt("view next", "tag")),
   awful.key({ ctrlkey, altkey }, leftkey, awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ ctrlkey, altkey }, "h", awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ ctrlkey, altkey }, rightkey, awful.tag.viewnext, _opt("view next", "tag")),
   awful.key({ ctrlkey, altkey }, "l", awful.tag.viewnext, _opt("view next", "tag")),
-
-  awful.key({ modkey }, tabkey, function()
-    awful.spawn("rofi -show window -modi window", nilfn)
-  end, { description = "cycle through all clients", group = "client" }),
 
   awful.key({ modkey, shiftkey }, "n", lain.util.add_tag, _opt("add tag", "tag")),
   awful.key({ modkey, shiftkey }, "e", lain.util.rename_tag, _opt("rename tag", "tag")),
@@ -74,25 +68,53 @@ awful.keyboard.append_global_keybindings({
   awful.key({ modkey, shiftkey }, "d", lain.util.delete_tag, _opt("delete tag", "tag")),
   --}}}
 
-  -- Jump, focus and Swap {{{
+  -- Clients {{{
+  awful.key({ modkey }, tabkey, function()
+    awful.spawn("rofi -show window -modi window", nilfn)
+  end, { description = "cycle through all clients", group = "client" }),
+
+  awful.key({ modkey, shiftkey }, "h", function()
+    awful.client.swap.bydirection("left")
+  end, _opt("swap with client at left", "client")),
   awful.key({ modkey, shiftkey }, "j", function()
-    awful.client.swap.byidx(1)
-  end, _opt("swap with next client by index", "client")),
+    awful.client.swap.bydirection("down")
+  end, _opt("swap with client at bottom", "client")),
   awful.key({ modkey, shiftkey }, "k", function()
-    awful.client.swap.byidx(-1)
-  end, _opt("swap with previous client by index", "client")),
+    awful.client.swap.bydirection("up")
+  end, _opt("swap with client at top", "client")),
+  awful.key({ modkey, shiftkey }, "l", function()
+    awful.client.swap.bydirection("right")
+  end, _opt("swap with client at right", "client")),
   awful.key({ modkey }, "u", awful.client.urgent.jumpto, _opt("jump to urgent client", "client")),
 
   awful.key({ altkey }, tabkey, function()
     awful.client.focus.byidx(1)
   end, _opt("focus next by index", "client")),
 
+  awful.key({ modkey }, "h", function()
+    awful.client.focus.bydirection("left")
+    if client.focus then
+      client.focus:raise()
+    end
+  end, _opt("focus client on the left", "client")),
   awful.key({ modkey }, "j", function()
-    awful.client.focus.byidx(1)
-  end, _opt("focus next by index", "client")),
+    awful.client.focus.bydirection("down")
+    if client.focus then
+      client.focus:raise()
+    end
+  end, _opt("focus client on the bottom", "client")),
   awful.key({ modkey }, "k", function()
-    awful.client.focus.byidx(-1)
-  end, _opt("focus previous by index", "client")),
+    awful.client.focus.bydirection("up")
+    if client.focus then
+      client.focus:raise()
+    end
+  end, _opt("focus client on the top", "client")),
+  awful.key({ modkey }, "l", function()
+    awful.client.focus.bydirection("right")
+    if client.focus then
+      client.focus:raise()
+    end
+  end, _opt("focus client on the right", "client")),
 
   awful.key({ modkey, ctrlkey }, "j", function()
     awful.screen.focus_relative(1)
@@ -119,6 +141,42 @@ awful.keyboard.append_global_keybindings({
     -- Prevent being unreachable.
     awful.placement.no_offscreen(focused)
   end, _opt("move client to a scratch tag", "client")),
+
+  awful.key({ altkey }, esckey, function()
+    local c = awful.client.focus.history.list[2]
+    client.focus = c
+    local t = client.focus and client.focus.first_tag or nil
+    if t then
+      t:view_only()
+    end
+    c:raise()
+  end, _opt("go back", "client")),
+
+  awful.key({ altkey, ctrlkey, shiftkey }, "h", function()
+    local focused = client.focus
+    if not focused then
+      return
+    end
+    local curtag = focused.screen.selected_tag
+    local tags = focused.screen.tags
+    local idx = curtag.index
+    local newtag = tags[gmath.cycle(#tags, idx - 1)]
+    focused:move_to_tag(newtag)
+    awful.tag.viewprev()
+  end, _opt("move client to previous tag", "client")),
+
+  awful.key({ altkey, ctrlkey, shiftkey }, "l", function()
+    local focused = client.focus
+    if not focused then
+      return
+    end
+    local curtag = focused.screen.selected_tag
+    local tags = focused.screen.tags
+    local idx = curtag.index
+    local newtag = tags[gmath.cycle(#tags, idx + 1)]
+    focused:move_to_tag(newtag)
+    awful.tag.viewnext()
+  end, _opt("move client to next tag", "client")),
   --}}}
 
   -- Layout {{{
@@ -128,16 +186,16 @@ awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, leftkey, function()
     awful.tag.incmwfact(-0.05)
   end, _opt("decrease master width factor", "layout")),
-  awful.key({ modkey, shiftkey }, "h", function()
+  awful.key({ modkey, altkey }, "h", function()
     awful.tag.incnmaster(1, nil, true)
   end, _opt("increase the number of master clients", "layout")),
-  awful.key({ modkey, shiftkey }, "l", function()
+  awful.key({ modkey, altkey }, "l", function()
     awful.tag.incnmaster(-1, nil, true)
   end, _opt("decrease the number of master clients", "layout")),
-  awful.key({ modkey, ctrlkey }, "h", function()
+  awful.key({ modkey, altkey }, "j", function()
     awful.tag.incncol(1, nil, true)
   end, _opt("increase the number of columns", "layout")),
-  awful.key({ modkey, ctrlkey }, "l", function()
+  awful.key({ modkey, altkey }, "k", function()
     awful.tag.incncol(-1, nil, true)
   end, _opt("decrease the number of columns", "layout")),
   awful.key({ modkey }, spacekey, function()
@@ -251,8 +309,8 @@ awful.keyboard.append_global_keybindings({
 -- Be careful: we use keycodes to make it work on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
-awful.keyboard.append_global_keybindings({
-    -- View tag only {{{
+  awful.keyboard.append_global_keybindings({
+    -- View tag {{{
     awful.key({ modkey }, "#" .. i + 9, function()
       local focused = awful.screen.focused()
       local cur_tag = focused.tags[i]

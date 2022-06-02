@@ -2,7 +2,6 @@
 local gears = require("gears")
 local awful = require("awful")
 local lain = require("lain")
-local gmath = require("gears.math")
 local vars = require("config.variables")
 
 local modkey = vars.keys.mod
@@ -13,7 +12,6 @@ local leftkey = vars.keys.left
 local rightkey = vars.keys.right
 local upkey = vars.keys.up
 local downkey = vars.keys.down
-local esckey = vars.keys.esc
 local returnkey = vars.keys.ret
 --}}}
 
@@ -33,42 +31,6 @@ local clientkeys = gears.table.join(
   awful.key({ modkey }, "o", function(c)
     c:move_to_screen()
   end, _opt("move to screen", "client")),
-
-  awful.key({ altkey, ctrlkey, shiftkey }, "h", function()
-    local focused = client.focus
-    if not focused then
-      return
-    end
-    local curtag = focused.screen.selected_tag
-    local tags = focused.screen.tags
-    local idx = curtag.index
-    local newtag = tags[gmath.cycle(#tags, idx - 1)]
-    focused:move_to_tag(newtag)
-    awful.tag.viewprev()
-  end, _opt("move client to previous tag", "client")),
-
-  awful.key({ altkey, ctrlkey, shiftkey }, "l", function()
-    local focused = client.focus
-    if not focused then
-      return
-    end
-    local curtag = focused.screen.selected_tag
-    local tags = focused.screen.tags
-    local idx = curtag.index
-    local newtag = tags[gmath.cycle(#tags, idx + 1)]
-    focused:move_to_tag(newtag)
-    awful.tag.viewnext()
-  end, _opt("move client to next tag", "client")),
-
-  awful.key({ altkey }, esckey, function()
-    local c = awful.client.focus.history.list[2]
-    client.focus = c
-    local t = client.focus and client.focus.first_tag or nil
-    if t then
-      t:view_only()
-    end
-    c:raise()
-  end, _opt("go back", "client")),
   --}}}
 
   -- Toggling {{{
