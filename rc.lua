@@ -13,23 +13,25 @@ menubar.utils.terminal = terminal
 awful.util.shell = vars.apps.shell
 
 -- Error handling {{{
--- Handle runtime errors during startup.
+-- Handle runtime errors during startup.{{{
 if awesome.startup_errors then
   naughty.notification({
     preset = naughty.config.presets.critical,
     title = "Startup encountered a problem",
     message = awesome.startup_errors,
   })
-end
+end --}}}
 
+-- Display Error {{{
 naughty.connect_signal("request::display_error", function(message, startup)
   naughty.notification({
     urgency = "critical",
     title = "Oops, an error happened" .. (startup and " during startup!" or "!"),
     message = message,
   })
-end)
+end) --}}}
 
+-- Deprecation Notices {{{
 local dump_str = require("lib.debug").dump_str
 awesome.connect_signal("debug::deprecation", function(hint, see, args)
   naughty.notification({
@@ -38,9 +40,9 @@ awesome.connect_signal("debug::deprecation", function(hint, see, args)
     message = string.format("%s\n%s\n%s", hint, see, dump_str(args)),
     timeout = 10,
   })
-end)
+end) --}}}
 
--- Handle runtime errors after startup.
+-- Handle runtime errors after startup {{{
 do
   local in_error = false
   awesome.connect_signal("debug::error", function(err)
@@ -56,7 +58,7 @@ do
     })
     in_error = false
   end)
-end
+end --}}}
 -- }}}
 
 require("theme.theme")
@@ -74,4 +76,4 @@ collectgarbage()
 collectgarbage("setpause", 110)
 collectgarbage("setstepmul", 1000)
 
--- vim: fdm=marker fdl=0
+-- vim: fdm=marker fdl=1

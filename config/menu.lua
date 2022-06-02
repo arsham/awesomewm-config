@@ -6,7 +6,7 @@ local gears = require("gears")
 -- matching name is opened:
 local hotkeys_popup = require("awful.hotkeys_popup")
 
-awful.util.mymainmenu = freedesktop.menu.build({
+awful.util.mymainmenu = freedesktop.menu.build({ --{{{
   before = {
     {
       "Favourites",
@@ -33,14 +33,14 @@ awful.util.mymainmenu = freedesktop.menu.build({
     { "Restart", "systemctl reboot" },
     { "Shutdown", "systemctl poweroff" },
   },
-})
+}) --}}}
 
 local hider = require("lib.outside_click_hides")
 hider.menu(awful.util.mymainmenu, nil, true)
-
--- }}}
 
 -- Mouse bindings {{{
 root.buttons(gears.table.join(awful.button({}, 3, function()
   awful.util.mymainmenu:toggle()
 end))) -- }}}
+
+-- vim: fdm=marker fdl=0

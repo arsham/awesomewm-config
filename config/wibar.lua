@@ -94,13 +94,13 @@ local function set_wallpaper(s) --{{{
   end
 end --}}}
 
-local textclock = function()
+local textclock = function() --{{{
   local widget = wibox.widget.textclock()
   lain.widget.cal({
     attach_to = { widget },
   })
   return widget
-end
+end --}}}
 
 -- Connection For Each Screen {{{
 screen.connect_signal("request::desktop_decoration", function(s)
