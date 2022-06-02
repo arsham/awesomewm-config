@@ -40,7 +40,7 @@ local function nilfn() end
 --}}}
 
 -- Global Keys {{{1
-local globalkeys = gears.table.join(
+awful.keyboard.append_global_keybindings({
   -- Core {{{
   awful.key({ modkey, shiftkey }, "q", awesome.quit, _opt("quit awesome", "awesome")),
 
@@ -242,17 +242,16 @@ local globalkeys = gears.table.join(
   awful.key({}, "XF86MonBrightnessDown", function()
     awesome.emit_signal("widget::brightness_osd_slider", -5)
     awesome.emit_signal("module::brightness_osd:show", true)
-  end, _opt("-10%", "system"))
+  end, _opt("-10%", "system")),
   --}}}
-)
+})
 --}}}
 
 -- Bind all key numbers to tags {{{
 -- Be careful: we use keycodes to make it work on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
 for i = 1, 9 do
-  globalkeys = gears.table.join(
-    globalkeys,
+awful.keyboard.append_global_keybindings({
     -- View tag only {{{
     awful.key({ modkey }, "#" .. i + 9, function()
       local focused = awful.screen.focused()
@@ -292,12 +291,10 @@ for i = 1, 9 do
           client.focus:toggle_tag(cur_tag)
         end
       end
-    end, _opt("toggle focused client on tag #" .. i, "tag"))
+    end, _opt("toggle focused client on tag #" .. i, "tag")),
     --}}}
-  )
+  })
 end
 --}}}
-
-return globalkeys
 
 -- vim: fdm=marker fdl=1
