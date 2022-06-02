@@ -1,4 +1,3 @@
--- vim: fdm=marker fdl=1
 -- Imports {{{2
 local vars = require("config.variables")
 
@@ -13,23 +12,20 @@ local ctrlkey = vars.keys.ctrl
 local shiftkey = vars.keys.shift
 local leftkey = vars.keys.left
 local rightkey = vars.keys.right
-local upkey = vars.keys.up
-local downkey = vars.keys.down
 local esckey = vars.keys.esc
 local returnkey = vars.keys.ret
 local spacekey = vars.keys.space
 local tabkey = vars.keys.tab
 
-local gears = require("gears") --Utilities such as color parsing and objects
-local awful = require("awful") --Everything related to window managment
-require("awful.autofocus")
-local beautiful = require("beautiful") -- Theme handling library
+local gears = require("gears")
+local awful = require("awful")
+local beautiful = require("beautiful")
 local menubar = require("menubar")
 local lain = require("lain")
-local gmath = require("gears.math")
 local gtable = require("gears.table")
 --}}}
 
+-- Local Functions {{{2
 local function _opt(desc, group)
   return { description = desc, group = group }
 end
@@ -41,13 +37,13 @@ local function next_random_icon()
 end
 
 local function nilfn() end
+--}}}
 
--- Global Keys {{{
+-- Global Keys {{{1
 local globalkeys = gears.table.join(
   -- Core {{{
   awful.key({ modkey, shiftkey }, "q", awesome.quit, _opt("quit awesome", "awesome")),
 
-  -- awful.key({ modkey }, "s", hotkeys_popup.show_help, _opt("show help", "awesome")),
   awful.key({ modkey, shiftkey }, "r", awesome.restart, _opt("reload awesome", "awesome")),
   awful.key({ modkey }, "w", function()
     awful.util.mymainmenu:show()
@@ -63,8 +59,6 @@ local globalkeys = gears.table.join(
   awful.key({ ctrlkey, altkey }, rightkey, awful.tag.viewnext, _opt("view next", "tag")),
   awful.key({ ctrlkey, altkey }, "l", awful.tag.viewnext, _opt("view next", "tag")),
 
-  -- awful.key({ modkey }, tabkey, awful.tag.viewnext, _opt("view next", "tag")),
-  -- awful.key({ modkey, shiftkey }, tabkey, awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ modkey }, tabkey, function()
     awful.spawn("rofi -show window -modi window", nilfn)
   end, { description = "cycle through all clients", group = "client" }),
@@ -90,11 +84,6 @@ local globalkeys = gears.table.join(
   awful.key({ modkey }, "u", awful.client.urgent.jumpto, _opt("jump to urgent client", "client")),
 
   awful.key({ altkey }, tabkey, function()
-    -- awful.client.focus.history.previous()
-    -- if client.focus then
-    --   client.focus:raise()
-    -- end
-    -- end, _opt("go back", "client")),
     awful.client.focus.byidx(1)
   end, _opt("focus next by index", "client")),
 
@@ -127,8 +116,9 @@ local globalkeys = gears.table.join(
     })
     focused:tags({ tag })
     tag:view_only()
+    -- Prevent being unreachable.
+    awful.placement.no_offscreen(focused)
   end, _opt("move client to a scratch tag", "client")),
-
   --}}}
 
   -- Layout {{{
@@ -203,15 +193,7 @@ local globalkeys = gears.table.join(
   awful.key({ modkey }, "c", function()
     awful.spawn.easy_async("rofi -show calc -modi calc -no-show-match -no-sort", nilfn)
   end, { description = "show calculator", group = "launcher" }),
-
   --}}}
-
-  -- Session management {{{
-
-  -- awful.key({ modkey }, escK, function()
-  --   awful.util.spawn("xkill")
-  -- end, _opt("Kill proces", "system")),
-  -- }}}
 
   -- Audio {{{
   awful.key({ modkey }, "v", function()
@@ -265,144 +247,6 @@ local globalkeys = gears.table.join(
 )
 --}}}
 
--- Client Keys {{{
-local clientkeys = gears.table.join(
-  awful.key({ modkey }, "q", function(c)
-    c:kill()
-  end, _opt("close", "client")),
-
-  awful.key({ modkey, ctrlkey }, returnkey, function(c)
-    c:swap(awful.client.getmaster())
-  end, _opt("move to master", "client")),
-  awful.key({ modkey }, "o", function(c)
-    c:move_to_screen()
-  end, _opt("move to screen", "client")),
-
-  awful.key({ altkey, ctrlkey, shiftkey }, "h", function()
-    local focused = client.focus
-    if not focused then
-      return
-    end
-    local curtag = focused.screen.selected_tag
-    local tags = focused.screen.tags
-    local idx = curtag.index
-    local newtag = tags[gmath.cycle(#tags, idx - 1)]
-    focused:move_to_tag(newtag)
-    awful.tag.viewprev()
-  end, _opt("move client to previous tag", "client")),
-
-  awful.key({ altkey, ctrlkey, shiftkey }, "l", function()
-    local focused = client.focus
-    if not focused then
-      return
-    end
-    local curtag = focused.screen.selected_tag
-    local tags = focused.screen.tags
-    local idx = curtag.index
-    local newtag = tags[gmath.cycle(#tags, idx + 1)]
-    focused:move_to_tag(newtag)
-    awful.tag.viewnext()
-  end, _opt("move client to next tag", "client")),
-
-  awful.key({ altkey }, esckey, function()
-    local c = awful.client.focus.history.list[2]
-    client.focus = c
-    local t = client.focus and client.focus.first_tag or nil
-    if t then
-      t:view_only()
-    end
-    c:raise()
-  end, _opt("go back", "client")),
-
-  -- Toggling {{{
-  awful.key({ modkey }, "t", function(c)
-    c.ontop = not c.ontop
-  end, _opt("toggle keep on top", "client")),
-  awful.key({ modkey }, "n", function(c)
-    -- The client currently has the input focus, so it cannot be
-    -- minimized, since minimized clients can't have the focus.
-    c.minimized = true
-  end, _opt("minimize", "client")),
-  awful.key({ modkey, ctrlkey }, "n", function()
-    local c = awful.client.restore()
-    -- Focus restored client
-    if c then
-      c:emit_signal("request::activate", "key.unminimize", { raise = true })
-      c:raise()
-    end
-  end, _opt("restore minimized", "client")),
-  awful.key({ modkey }, "m", function(c)
-    c.maximized = not c.maximized
-    c:raise()
-  end, _opt("(un)maximize", "client")),
-  awful.key({ modkey, ctrlkey }, "h", function(c)
-    c.maximized_vertical = not c.maximized_vertical
-    c:raise()
-  end, _opt("(un)maximize vertically", "client")),
-  awful.key({ modkey, ctrlkey }, "v", function(c)
-    c.maximized_horizontal = not c.maximized_horizontal
-    c:raise()
-  end, _opt("(un)maximize horizontally", "client")),
-
-  awful.key({ altkey, shiftkey }, "m", lain.util.magnify_client, _opt("magnify client", "client")),
-  awful.key({ modkey }, "F11", function(c)
-    c.fullscreen = not c.fullscreen
-    c:raise()
-  end, _opt("toggle fullscreen", "client")),
-  awful.key({ modkey }, "f", awful.client.floating.toggle, _opt("toggle floating", "client")),
-  awful.key({ modkey, ctrlkey }, "s", function(c)
-    c.sticky = not c.sticky
-  end, _opt("toggle sticky", "client")),
-  --}}}
-
-  -- Resize windows {{{
-  awful.key({ modkey, ctrlkey }, upkey, function(c)
-    if c.floating then
-      c:relative_move(0, 0, 0, -10)
-    else
-      awful.client.incwfact(0.025)
-    end
-  end, _opt("Floating Resize Vertical -", "client")),
-  awful.key({ modkey, ctrlkey }, downkey, function(c)
-    if c.floating then
-      c:relative_move(0, 0, 0, 10)
-    else
-      awful.client.incwfact(-0.025)
-    end
-  end, _opt("Floating Resize Vertical +", "client")),
-  awful.key({ modkey, ctrlkey }, leftkey, function(c)
-    if c.floating then
-      c:relative_move(0, 0, -10, 0)
-    else
-      awful.tag.incmwfact(-0.025)
-    end
-  end, _opt("Floating Resize Horizontal -", "client")),
-  awful.key({ modkey, ctrlkey }, rightkey, function(c)
-    if c.floating then
-      c:relative_move(0, 0, 10, 0)
-    else
-      awful.tag.incmwfact(0.025)
-    end
-  end, _opt("Floating Resize Horizontal +", "client")),
-  --}}}
-
-  -- Moving floating windows {{{
-  awful.key({ modkey, shiftkey }, downkey, function(c)
-    c:relative_move(0, 10, 0, 0)
-  end, _opt("Floating Move Down", "client")),
-  awful.key({ modkey, shiftkey }, upkey, function(c)
-    c:relative_move(0, -10, 0, 0)
-  end, _opt("Floating Move Up", "client"))
-  -- awful.key({ modkey, shiftkey }, leftkey, function(c)
-  --   c:relative_move(-10, 0, 0, 0)
-  -- end, _opt("Floating Move Left", "client")),
-  -- awful.key({ modkey, shiftkey }, rightkey, function(c)
-  --   c:relative_move(10, 0, 0, 0)
-  -- end, _opt("Floating Move Right", "client"))
-  --}}}
-)
---}}}
-
 -- Bind all key numbers to tags {{{
 -- Be careful: we use keycodes to make it work on any keyboard layout.
 -- This should map on the top row of your keyboard, usually 1 to 9.
@@ -418,6 +262,7 @@ for i = 1, 9 do
       end
     end, _opt("view tag #" .. i, "tag")),
     --}}}
+
     -- Toggle tag display {{{
     awful.key({ modkey, ctrlkey }, "#" .. i + 9, function()
       local focused = awful.screen.focused()
@@ -427,6 +272,7 @@ for i = 1, 9 do
       end
     end, _opt("toggle tag #" .. i, "tag")),
     --}}}
+
     -- Move client to tag {{{
     awful.key({ modkey, shiftkey }, "#" .. i + 9, function()
       if client.focus then
@@ -437,6 +283,7 @@ for i = 1, 9 do
       end
     end, _opt("move focused client to tag #" .. i, "tag")),
     --}}}
+
     -- Toggle tag on focused client {{{
     awful.key({ modkey, ctrlkey, shiftkey }, "#" .. i + 9, function()
       if client.focus then
@@ -451,26 +298,6 @@ for i = 1, 9 do
 end
 --}}}
 
--- Client Buttons {{{
-local clientbuttons = gears.table.join(
-  awful.button({}, 1, function(c)
-    c:emit_signal("request::activate", "mouse_click", { raise = true })
-  end),
-  awful.button({ modkey }, 1, function(c)
-    c:emit_signal("request::activate", "mouse_click", { raise = true })
-    awful.mouse.client.move(c)
-  end),
-  awful.button({ modkey }, 3, function(c)
-    c:emit_signal("request::activate", "mouse_click", { raise = true })
-    awful.mouse.client.resize(c)
-  end)
-)
---}}}
+return globalkeys
 
-root.keys(globalkeys)
-
-return {
-  globalkeys = globalkeys,
-  clientbuttons = clientbuttons,
-  clientkeys = clientkeys,
-}
+-- vim: fdm=marker fdl=1
