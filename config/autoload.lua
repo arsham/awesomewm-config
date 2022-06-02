@@ -96,11 +96,6 @@ run_once_ps({
 run_once({ name = "numlockx", cmd = "numlockx on" })
 run_once({ name = "volumeicon", cmd = "volumeicon" })
 run_once({ name = "redshift-gtk", cmd = "redshift-gtk" })
-run_once_ps({
-  match = "variety",
-  cmd = "variety --profile /home/arsham/.config/variety/",
-  sleep = 1,
-})
 run_once({ name = "parcellite", cmd = "parcellite", sleep = 3 })
 run_once({ name = "syndaemon", cmd = "syndaemon -i 0.5 -t -K -R" })
 run_once({

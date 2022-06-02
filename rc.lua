@@ -62,6 +62,7 @@ end --}}}
 -- }}}
 
 require("theme.theme")
+require("config.wallpaper")
 require("config.menu")
 require("config.layouts")
 require("config.wibar")

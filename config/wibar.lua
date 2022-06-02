@@ -2,7 +2,6 @@
 local gears = require("gears")
 local awful = require("awful")
 local wibox = require("wibox")
-local beautiful = require("beautiful")
 local lain = require("lain")
 local widgets = require("widgets")
 local dpi = require("beautiful.xresources").apply_dpi
@@ -72,28 +71,6 @@ local tasklist_buttons = gears.table.join(
   end)
 ) --}}}
 
-local function set_wallpaper(s) --{{{
-  if beautiful.wallpaper then
-    awful.wallpaper({
-      screen = s,
-      widget = {
-        {
-          image = beautiful.wallpaper,
-          upscale = true,
-          downscale = true,
-          horizontal_fit_policy = "fit",
-          vertical_fit_policy = "auto",
-          widget = wibox.widget.imagebox,
-        },
-        valign = "center",
-        halign = "center",
-        tiled = false,
-        widget = wibox.container.tile,
-      },
-    })
-  end
-end --}}}
-
 local textclock = function() --{{{
   local widget = wibox.widget.textclock()
   lain.widget.cal({
@@ -104,7 +81,6 @@ end --}}}
 
 -- Connection For Each Screen {{{
 screen.connect_signal("request::desktop_decoration", function(s)
-  set_wallpaper(s)
   -- Each screen has its own tag table.
   awful.tag(vars.tags, s, awful.layout.layouts[1])
   -- Create a promptbox for each screen
