@@ -1,5 +1,3 @@
-require("awful.autofocus")
-
 local globalkeys = require("config.keybindings.globalkeys")
 root.keys(globalkeys)
 

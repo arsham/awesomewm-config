@@ -1,17 +1,16 @@
-local modkey = "Mod4"
-
+--- Imports {{{
 local gears = require("gears")
 local awful = require("awful")
-require("awful.autofocus")
 local wibox = require("wibox")
 local beautiful = require("beautiful")
 local lain = require("lain")
 local widgets = require("widgets")
 local dpi = require("beautiful.xresources").apply_dpi
 local naughty = require("naughty")
-local vars = require("config.variables")
 local hider = require("lib.outside_click_hides")
+local vars = require("config.variables")
 
+local modkey = vars.keys.mod
 naughty.config.defaults["icon_size"] = vars.theme.icon_size
 
 awful.layout.suit.tile.left.mirror = true

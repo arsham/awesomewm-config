@@ -1,7 +1,4 @@
--- Importing Modules {{{
 pcall(require, "luarocks.loader")
-
--- Standard awesome library
 local awful = require("awful")
 require("awful.autofocus")
 require("awful.hotkeys_popup.keys")
@@ -12,7 +9,6 @@ local terminal = vars.apps.terminal
 awful.util.terminal = terminal
 menubar.utils.terminal = terminal
 awful.util.shell = vars.apps.shell
---}}}
 
 -- Error handling {{{
 -- Handle runtime errors during startup.

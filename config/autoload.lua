@@ -1,15 +1,16 @@
 local naughty = require("naughty")
 local awful = require("awful")
 
-local function with_sleep(fn, sleep)
+local function with_sleep(fn, sleep) --{{{
   if sleep then
     awful.spawn.easy_async_with_shell(string.format("sleep %d", sleep), fn)
   else
     fn()
   end
 end
+--}}}
 
-local function async(cmd)
+local function async(cmd) --{{{
   awful.spawn.easy_async_with_shell(cmd, function(_, err)
     if err and err ~= "" then
       naughty.notify({
@@ -21,8 +22,9 @@ local function async(cmd)
     end
   end)
 end
+--}}}
 
-local function run_once_ps(item)
+local function run_once_ps(item) --{{{
   local cmd = item.cmd
   local match = item.match
   local cmd_str = string.format("ps -C %s|wc -l", match)
@@ -34,8 +36,9 @@ local function run_once_ps(item)
     end)
   end, item.sleep)
 end
+--}}}
 
-local function run_once(item)
+local function run_once(item) --{{{
   local cmd = item.cmd
   local name = item.name
   local kill = item.kill
@@ -60,8 +63,9 @@ local function run_once(item)
     async(cmd_str .. cmd)
   end, item.sleep)
 end
+--}}}
 
-local function run_once_grep(item)
+local function run_once_grep(item) --{{{
   local cmd = item.cmd
   local match = item.match
   with_sleep(function()
@@ -75,6 +79,7 @@ local function run_once_grep(item)
     )
   end, item.sleep)
 end
+--}}}
 
 -- run xrandr --output VGA-1 --primary --mode 1360x768 --pos 0x0 --rotate normal
 -- run xrandr --output HDMI2 --mode 1920x1080 --pos 1920x0 --rotate normal --output HDMI1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off
@@ -102,3 +107,5 @@ run_once({
   name = "picom",
   cmd = "picom -b --experimental-backends --backend glx --config  $HOME/.config/awesome/picom.conf",
 })
+
+-- vim: fdm=marker fdl=0

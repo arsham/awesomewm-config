@@ -2,7 +2,6 @@ local keys = require("config.keybindings")
 local placement = require("lib.placement")
 local awful = require("awful")
 local ruled = require("ruled")
-require("awful.autofocus")
 local beautiful = require("beautiful")
 
 ruled.client.connect_signal("request::rules", function()

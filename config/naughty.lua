@@ -16,10 +16,11 @@ ruled.notification.connect_signal("request::rules", function() --{{{
   })
 end) --}}}
 
-naughty.connect_signal("request::display", function(n)
+naughty.connect_signal("request::display", function(n) --{{{
   n.title = string.format("<span font = 'Noto Sans 16'>%s</span>", n.title)
   naughty.layout.box({ notification = n })
 end)
+--}}}
 
 local cst = require("naughty.constants") --{{{
 naughty.connect_signal("destroyed", function(n, reason)
@@ -39,7 +40,6 @@ naughty.connect_signal("destroyed", function(n, reason)
       c.urgent = true
     end
   end
-  -- end
 end) --}}}
 
 -- vim: fdm=marker fdl=0
