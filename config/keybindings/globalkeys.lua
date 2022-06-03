@@ -1,4 +1,4 @@
--- Imports {{{2
+-- Imports {{{
 local vars = require("config.variables")
 
 local terminal = vars.apps.terminal
@@ -25,7 +25,7 @@ local lain = require("lain")
 local gtable = require("gears.table")
 --}}}
 
--- Local Functions {{{2
+-- Local Functions {{{
 local function _opt(desc, group)
   return { description = desc, group = group }
 end
@@ -39,18 +39,17 @@ end
 local function nilfn() end
 --}}}
 
--- Global Keys {{{1
+-- Core {{{
 awful.keyboard.append_global_keybindings({
-  -- Core {{{
   awful.key({ modkey, shiftkey }, "q", awesome.quit, _opt("quit awesome", "awesome")),
-
   awful.key({ modkey, shiftkey }, "r", awesome.restart, _opt("reload awesome", "awesome")),
   awful.key({ modkey }, "w", function()
     awful.util.mymainmenu:show()
   end, _opt("show main menu", "awesome")),
-  --}}}
+}) --}}}
 
-  -- Tags {{{
+-- Tags {{{
+awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, esckey, awful.tag.history.restore, _opt("go back", "tag")),
   awful.key({ ctrlkey, altkey }, leftkey, awful.tag.viewprev, _opt("view previous", "tag")),
   awful.key({ ctrlkey, altkey }, "h", awful.tag.viewprev, _opt("view previous", "tag")),
@@ -66,62 +65,22 @@ awful.keyboard.append_global_keybindings({
     lain.util.move_tag(1)
   end, _opt("move tag right", "tag")),
   awful.key({ modkey, shiftkey }, "d", lain.util.delete_tag, _opt("delete tag", "tag")),
-  --}}}
+}) --}}}
 
-  -- Clients {{{
-  awful.key({ modkey }, tabkey, function()
-    awful.spawn("rofi -show window -modi window", nilfn)
-  end, { description = "cycle through all clients", group = "client" }),
-
+-- Moving {{{
+awful.keyboard.append_global_keybindings({
   awful.key({ modkey, shiftkey }, "h", function()
     awful.client.swap.bydirection("left")
-  end, _opt("swap with client at left", "client")),
+  end, _opt("swap with client at left", "move")),
   awful.key({ modkey, shiftkey }, "j", function()
     awful.client.swap.bydirection("down")
-  end, _opt("swap with client at bottom", "client")),
+  end, _opt("swap with client at bottom", "move")),
   awful.key({ modkey, shiftkey }, "k", function()
     awful.client.swap.bydirection("up")
-  end, _opt("swap with client at top", "client")),
+  end, _opt("swap with client at top", "move")),
   awful.key({ modkey, shiftkey }, "l", function()
     awful.client.swap.bydirection("right")
-  end, _opt("swap with client at right", "client")),
-  awful.key({ modkey }, "u", awful.client.urgent.jumpto, _opt("jump to urgent client", "client")),
-
-  awful.key({ altkey }, tabkey, function()
-    awful.client.focus.byidx(1)
-  end, _opt("focus next by index", "client")),
-
-  awful.key({ modkey }, "h", function()
-    awful.client.focus.bydirection("left")
-    if client.focus then
-      client.focus:raise()
-    end
-  end, _opt("focus client on the left", "client")),
-  awful.key({ modkey }, "j", function()
-    awful.client.focus.bydirection("down")
-    if client.focus then
-      client.focus:raise()
-    end
-  end, _opt("focus client on the bottom", "client")),
-  awful.key({ modkey }, "k", function()
-    awful.client.focus.bydirection("up")
-    if client.focus then
-      client.focus:raise()
-    end
-  end, _opt("focus client on the top", "client")),
-  awful.key({ modkey }, "l", function()
-    awful.client.focus.bydirection("right")
-    if client.focus then
-      client.focus:raise()
-    end
-  end, _opt("focus client on the right", "client")),
-
-  awful.key({ modkey, ctrlkey }, "j", function()
-    awful.screen.focus_relative(1)
-  end, _opt("focus the next screen", "screen")),
-  awful.key({ modkey, ctrlkey }, "k", function()
-    awful.screen.focus_relative(-1)
-  end, _opt("focus the previous screen", "screen")),
+  end, _opt("swap with client at right", "move")),
 
   awful.key({ modkey, shiftkey }, "v", function()
     local focused = client.focus
@@ -140,17 +99,7 @@ awful.keyboard.append_global_keybindings({
     tag:view_only()
     -- Prevent being unreachable.
     awful.placement.no_offscreen(focused)
-  end, _opt("move client to a scratch tag", "client")),
-
-  awful.key({ altkey }, esckey, function()
-    local c = awful.client.focus.history.list[2]
-    client.focus = c
-    local t = client.focus and client.focus.first_tag or nil
-    if t then
-      t:view_only()
-    end
-    c:raise()
-  end, _opt("go back", "client")),
+  end, _opt("move client to a scratch tag", "move")),
 
   awful.key({ altkey, ctrlkey, shiftkey }, "h", function()
     local focused = client.focus
@@ -163,7 +112,7 @@ awful.keyboard.append_global_keybindings({
     local newtag = tags[gmath.cycle(#tags, idx - 1)]
     focused:move_to_tag(newtag)
     awful.tag.viewprev()
-  end, _opt("move client to previous tag", "client")),
+  end, _opt("move client to previous tag", "move")),
 
   awful.key({ altkey, ctrlkey, shiftkey }, "l", function()
     local focused = client.focus
@@ -176,10 +125,66 @@ awful.keyboard.append_global_keybindings({
     local newtag = tags[gmath.cycle(#tags, idx + 1)]
     focused:move_to_tag(newtag)
     awful.tag.viewnext()
-  end, _opt("move client to next tag", "client")),
-  --}}}
+  end, _opt("move client to next tag", "move")),
+}) --}}}
 
-  -- Layout {{{
+-- Focusing {{{
+awful.keyboard.append_global_keybindings({
+  awful.key({ modkey }, "u", awful.client.urgent.jumpto, _opt("jump to urgent client", "focus")),
+
+  awful.key({ modkey }, tabkey, function()
+    awful.spawn("rofi -show window -modi window", nilfn)
+  end, { description = "cycle through all clients", group = "focus" }),
+
+  awful.key({ altkey }, tabkey, function()
+    awful.client.focus.byidx(1)
+  end, _opt("focus next by index", "focus")),
+
+  awful.key({ modkey }, "h", function()
+    awful.client.focus.bydirection("left")
+    if client.focus then
+      client.focus:raise()
+    end
+  end, _opt("focus client on the left", "focus")),
+  awful.key({ modkey }, "j", function()
+    awful.client.focus.bydirection("down")
+    if client.focus then
+      client.focus:raise()
+    end
+  end, _opt("focus client on the bottom", "focus")),
+  awful.key({ modkey }, "k", function()
+    awful.client.focus.bydirection("up")
+    if client.focus then
+      client.focus:raise()
+    end
+  end, _opt("focus client on the top", "focus")),
+  awful.key({ modkey }, "l", function()
+    awful.client.focus.bydirection("right")
+    if client.focus then
+      client.focus:raise()
+    end
+  end, _opt("focus client on the right", "focus")),
+
+  awful.key({ modkey, ctrlkey }, "j", function()
+    awful.screen.focus_relative(1)
+  end, _opt("focus the next screen", "focus")),
+  awful.key({ modkey, ctrlkey }, "k", function()
+    awful.screen.focus_relative(-1)
+  end, _opt("focus the previous screen", "focus")),
+
+  awful.key({ altkey }, esckey, function()
+    local c = awful.client.focus.history.list[2]
+    client.focus = c
+    local t = client.focus and client.focus.first_tag or nil
+    if t then
+      t:view_only()
+    end
+    c:raise()
+  end, _opt("go back", "focus")),
+}) --}}}
+
+-- Layout {{{
+awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, rightkey, function()
     awful.tag.incmwfact(0.05)
   end, _opt("increase master width factor", "layout")),
@@ -211,9 +216,10 @@ awful.keyboard.append_global_keybindings({
   awful.key({ altkey, ctrlkey }, "k", function()
     lain.util.useless_gaps_resize(-5)
   end, _opt("decrement useless gaps", "layout")),
-  --}}}
+}) --}}}
 
-  -- Program Launchers {{{
+-- Program Launchers {{{
+awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, returnkey, function()
     awful.spawn.easy_async(terminal, nilfn)
   end, _opt("open a terminal", "launcher")),
@@ -226,10 +232,6 @@ awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, "e", function()
     awful.spawn.easy_async(filemanager, nilfn)
   end, _opt(filemanager, "launcher")),
-
-  awful.key({ altkey }, spacekey, function()
-    awful.spawn.easy_async("rofi -show combi", nilfn)
-  end, _opt("show rofi", "launcher")),
 
   awful.key({ altkey }, spacekey, function()
     awful.spawn.easy_async("rofi -show combi", nilfn)
@@ -251,59 +253,59 @@ awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, "c", function()
     awful.spawn.easy_async("rofi -show calc -modi calc -no-show-match -no-sort", nilfn)
   end, { description = "show calculator", group = "launcher" }),
-  --}}}
+}) --}}}
 
-  -- Audio {{{
+-- Media {{{
+awful.keyboard.append_global_keybindings({
   awful.key({ modkey }, "v", function()
     awful.spawn.easy_async("pavucontrol", nilfn)
-  end, _opt("pulseaudio control", "system")),
+  end, _opt("pulseaudio control", "media")),
   awful.key({}, "XF86AudioRaiseVolume", function()
     awesome.emit_signal("widget::volume_osd_slider", 5)
     awesome.emit_signal("module::volume_osd:show", true)
-  end),
+  end, _opt("increase volume", "media")),
   awful.key({}, "XF86AudioLowerVolume", function()
     awesome.emit_signal("widget::volume_osd_slider", -5)
     awesome.emit_signal("module::volume_osd:show", true)
-  end),
+  end, _opt("decrease volume", "media")),
   awful.key({}, "XF86AudioMute", function()
     os.execute("amixer -q set Master toggle")
-  end),
+  end, _opt("mute volume", "media")),
   awful.key({ ctrlkey, shiftkey }, "m", function()
     os.execute(string.format("amixer -q set %s 100%%", "Master"))
     beautiful.volume.update()
-  end),
+  end, _opt("max volume", "media")),
   awful.key({ ctrlkey, shiftkey }, "0", function()
     os.execute(string.format("amixer -q set %s 0%%", "Master"))
     beautiful.volume.update()
-  end),
+  end, _opt("min volume", "media")),
 
   --Media keys supported by mpd.
   awful.key({}, "XF86AudioPlay", function()
     awful.spawn.easy_async("mpc toggle", nilfn)
-  end),
+  end, _opt("toggle play music", "media")),
   awful.key({}, "XF86AudioNext", function()
     awful.spawn.easy_async("mpc next", nilfn)
-  end),
+  end, _opt("next tune", "media")),
   awful.key({}, "XF86AudioPrev", function()
     awful.spawn.easy_async("mpc prev", nilfn)
-  end),
+  end, _opt("previous tune", "media")),
   awful.key({}, "XF86AudioStop", function()
     awful.spawn.easy_async("mpc stop", nilfn)
-  end),
-  --}}}
+  end, _opt("stop playing", "media")),
+}) --}}}
 
-  -- Brightness{{{
+-- Brightness {{{
+awful.keyboard.append_global_keybindings({
   awful.key({}, "XF86MonBrightnessUp", function()
     awesome.emit_signal("widget::brightness_osd_slider", 5)
     awesome.emit_signal("module::brightness_osd:show", true)
-  end, _opt("+10%", "system")),
+  end, _opt("increase brightness +5%", "brightness")),
   awful.key({}, "XF86MonBrightnessDown", function()
     awesome.emit_signal("widget::brightness_osd_slider", -5)
     awesome.emit_signal("module::brightness_osd:show", true)
-  end, _opt("-10%", "system")),
-  --}}}
-})
---}}}
+  end, _opt("decrease brightness 5%", "brightness")),
+}) --}}}
 
 -- Bind all key numbers to tags {{{
 -- Be careful: we use keycodes to make it work on any keyboard layout.
@@ -317,7 +319,7 @@ for i = 1, 9 do
       if cur_tag then
         cur_tag:view_only()
       end
-    end, _opt("view tag #" .. i, "tag")),
+    end),
     --}}}
 
     -- Toggle tag display {{{
@@ -327,7 +329,7 @@ for i = 1, 9 do
       if cur_tag then
         awful.tag.viewtoggle(cur_tag)
       end
-    end, _opt("toggle tag #" .. i, "tag")),
+    end),
     --}}}
 
     -- Move client to tag {{{
@@ -338,7 +340,7 @@ for i = 1, 9 do
           client.focus:move_to_tag(cur_tag)
         end
       end
-    end, _opt("move focused client to tag #" .. i, "tag")),
+    end),
     --}}}
 
     -- Toggle tag on focused client {{{
@@ -349,10 +351,10 @@ for i = 1, 9 do
           client.focus:toggle_tag(cur_tag)
         end
       end
-    end, _opt("toggle focused client on tag #" .. i, "tag")),
+    end),
     --}}}
   })
 end
 --}}}
 
--- vim: fdm=marker fdl=1
+-- vim: fdm=marker fdl=0
