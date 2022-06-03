@@ -34,41 +34,25 @@ local clientkeys = gears.table.join(
   --}}}
 
   -- Toggling {{{
-  awful.key({ modkey }, "t", function(c)
+  awful.key({ modkey, ctrlkey }, "t", function(c)
     c.ontop = not c.ontop
   end, _opt("toggle keep on top", "client")),
-  awful.key({ modkey }, "n", function(c)
-    -- The client currently has the input focus, so it cannot be
-    -- minimized, since minimized clients can't have the focus.
-    c.minimized = true
-  end, _opt("minimize", "client")),
-  awful.key({ modkey, ctrlkey }, "n", function()
-    local c = awful.client.restore()
-    -- Focus restored client
-    if c then
-      c:emit_signal("request::activate", "key.unminimize", { raise = true })
-      c:raise()
-    end
-  end, _opt("restore minimized", "client")),
-  awful.key({ modkey }, "m", function(c)
+  awful.key({ modkey, ctrlkey }, "m", function(c)
     c.maximized = not c.maximized
     c:raise()
   end, _opt("(un)maximize", "client")),
-  awful.key({ modkey, ctrlkey }, "h", function(c)
-    c.maximized_vertical = not c.maximized_vertical
-    c:raise()
-  end, _opt("(un)maximize vertically", "client")),
-  awful.key({ modkey, ctrlkey }, "v", function(c)
-    c.maximized_horizontal = not c.maximized_horizontal
-    c:raise()
-  end, _opt("(un)maximize horizontally", "client")),
 
-  awful.key({ altkey, shiftkey }, "m", lain.util.magnify_client, _opt("magnify client", "client")),
+  awful.key({ modkey, shiftkey }, "m", lain.util.magnify_client, _opt("magnify client", "client")),
   awful.key({ modkey }, "F11", function(c)
     c.fullscreen = not c.fullscreen
     c:raise()
   end, _opt("toggle fullscreen", "client")),
-  awful.key({ modkey }, "f", awful.client.floating.toggle, _opt("toggle floating", "client")),
+  awful.key(
+    { modkey, ctrlkey },
+    "f",
+    awful.client.floating.toggle,
+    _opt("toggle floating", "client")
+  ),
   awful.key({ modkey, ctrlkey }, "s", function(c)
     c.sticky = not c.sticky
   end, _opt("toggle sticky", "client")),
@@ -111,14 +95,14 @@ local clientkeys = gears.table.join(
   end, _opt("Floating Move Down", "client")),
   awful.key({ modkey, shiftkey }, upkey, function(c)
     c:relative_move(0, -10, 0, 0)
-  end, _opt("Floating Move Up", "client"))
-  -- awful.key({ modkey, shiftkey }, leftkey, function(c)
-  --   c:relative_move(-10, 0, 0, 0)
-  -- end, _opt("Floating Move Left", "client")),
-  -- awful.key({ modkey, shiftkey }, rightkey, function(c)
-  --   c:relative_move(10, 0, 0, 0)
-  -- end, _opt("Floating Move Right", "client"))
-  --}}}
+  end, _opt("Floating Move Up", "client")),
+  awful.key({ modkey, shiftkey }, leftkey, function(c)
+    c:relative_move(-10, 0, 0, 0)
+  end, _opt("Floating Move Left", "client")),
+  awful.key({ modkey, shiftkey }, rightkey, function(c)
+    c:relative_move(10, 0, 0, 0)
+  end, _opt("Floating Move Right", "client"))
+  -- }}}
 )
 
 return clientkeys
