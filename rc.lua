@@ -3,7 +3,6 @@
 pcall(require, "luarocks.loader")
 local awful = require("awful")
 require("awful.autofocus")
-require("awful.hotkeys_popup.keys")
 local menubar = require("menubar")
 local naughty = require("naughty")
 local vars = require("config.variables")
