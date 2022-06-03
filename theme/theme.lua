@@ -1,7 +1,5 @@
 local dpi = require("beautiful.xresources").apply_dpi
 local gears = require("gears")
-local theme_assets = require("beautiful.theme_assets")
-local rnotification = require("ruled.notification")
 
 local dir = os.getenv("HOME") .. "/.config/awesome/theme"
 local function icon(name)

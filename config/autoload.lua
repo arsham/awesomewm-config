@@ -84,6 +84,7 @@ end
 -- run xrandr --output VGA-1 --primary --mode 1360x768 --pos 0x0 --rotate normal
 -- run xrandr --output HDMI2 --mode 1920x1080 --pos 1920x0 --rotate normal --output HDMI1 --primary --mode 1920x1080 --pos 0x0 --rotate normal --output VIRTUAL1 --off
 -- autorandr horizontal
+async("systemctl --user restart awesome-sensors.service")
 run_once({ name = "unclutter", cmd = "unclutter -root" })
 run_once({ name = "setxkbmap", cmd = "setxkbmap -option caps:escape" })
 run_once({ name = "nm-applet", cmd = "nm-applet" })
