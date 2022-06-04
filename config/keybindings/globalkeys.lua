@@ -307,54 +307,74 @@ awful.keyboard.append_global_keybindings({
   end, _opt("decrease brightness 5%", "brightness")),
 }) --}}}
 
--- Bind all key numbers to tags {{{
--- Be careful: we use keycodes to make it work on any keyboard layout.
--- This should map on the top row of your keyboard, usually 1 to 9.
-for i = 1, 9 do
-  awful.keyboard.append_global_keybindings({
-    -- View tag {{{
-    awful.key({ modkey }, "#" .. i + 9, function()
+-- View tag {{{
+awful.keyboard.append_global_keybindings({
+  awful.key({
+    modifiers = { modkey },
+    keygroup = "numrow",
+    description = "only view tag",
+    group = "tag",
+    on_press = function(index)
       local focused = awful.screen.focused()
-      local cur_tag = focused.tags[i]
+      local cur_tag = focused.tags[index]
       if cur_tag then
         cur_tag:view_only()
       end
-    end),
-    --}}}
+    end,
+  }),
+}) --}}}
 
-    -- Toggle tag display {{{
-    awful.key({ modkey, ctrlkey }, "#" .. i + 9, function()
+-- Toggle tag display {{{
+awful.keyboard.append_global_keybindings({
+  awful.key({
+    modifiers = { modkey, ctrlkey },
+    keygroup = "numrow",
+    description = "toggle tag display",
+    group = "tag",
+    on_press = function(index)
       local focused = awful.screen.focused()
-      local cur_tag = focused.tags[i]
+      local cur_tag = focused.tags[index]
       if cur_tag then
         awful.tag.viewtoggle(cur_tag)
       end
-    end),
-    --}}}
+    end,
+  }),
+}) --}}}
 
-    -- Move client to tag {{{
-    awful.key({ modkey, shiftkey }, "#" .. i + 9, function()
+-- Move client to tag {{{
+awful.keyboard.append_global_keybindings({
+  awful.key({
+    modifiers = { modkey, ctrlkey },
+    keygroup = "numrow",
+    description = "move client to another tag",
+    group = "tag",
+    on_press = function(index)
       if client.focus then
-        local cur_tag = client.focus.screen.tags[i]
+        local cur_tag = client.focus.screen.tags[index]
         if cur_tag then
           client.focus:move_to_tag(cur_tag)
         end
       end
-    end),
-    --}}}
+    end,
+  }),
+}) --}}}
 
-    -- Toggle tag on focused client {{{
-    awful.key({ modkey, ctrlkey, shiftkey }, "#" .. i + 9, function()
+-- Toggle tag on focused client {{{
+awful.keyboard.append_global_keybindings({
+  awful.key({
+    modifiers = { modkey, ctrlkey },
+    keygroup = "numrow",
+    description = "toggle tag on focused client",
+    group = "tag",
+    on_press = function(index)
       if client.focus then
-        local cur_tag = client.focus.screen.tags[i]
+        local cur_tag = client.focus.screen.tags[index]
         if cur_tag then
           client.focus:toggle_tag(cur_tag)
         end
       end
-    end),
-    --}}}
-  })
-end
---}}}
+    end,
+  }),
+}) --}}}
 
 -- vim: fdm=marker fdl=0
