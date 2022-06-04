@@ -59,10 +59,12 @@ awful.keyboard.append_global_keybindings({
   awful.key({ modkey, shiftkey }, "n", lain.util.add_tag, _opt("add tag", "tag")),
   awful.key({ modkey, shiftkey }, "e", lain.util.rename_tag, _opt("rename tag", "tag")),
   awful.key({ modkey, ctrlkey, shiftkey }, "h", function()
-    lain.util.move_tag(-1)
+    local tag = awful.screen.focused().selected_tag
+    tag.index = tag.index - 1
   end, _opt("move tag left", "tag")),
   awful.key({ modkey, ctrlkey, shiftkey }, "l", function()
-    lain.util.move_tag(1)
+    local tag = awful.screen.focused().selected_tag
+    tag.index = tag.index + 1
   end, _opt("move tag right", "tag")),
   awful.key({ modkey, shiftkey }, "d", lain.util.delete_tag, _opt("delete tag", "tag")),
 }) --}}}
